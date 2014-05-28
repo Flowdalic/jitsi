@@ -1476,7 +1476,7 @@ public class CallPeerJabberImpl
 
         transferSessionInfo.addExtension(transfer);
 
-        Connection connection = protocolProvider.getConnection();
+        XMPPConnection connection = protocolProvider.getConnection();
         PacketCollector collector = connection.createPacketCollector(
                 new PacketIDFilter(transferSessionInfo.getPacketID()));
         protocolProvider.getConnection().sendPacket(transferSessionInfo);

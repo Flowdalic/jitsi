@@ -81,7 +81,7 @@ public class RegistrationState
     public static final RegistrationState REGISTERED =
         new RegistrationState(_REGISTERED);
 
-    public static final String _CONNECTION_FAILED = "Connection Failed";
+    public static final String _CONNECTION_FAILED = "XMPPConnection Failed";
     /**
      * Registration has failed for a technical reason, such as connection
      * disruption for example.

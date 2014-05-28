@@ -26,7 +26,7 @@ public class UserSearchManager {
     /**
      * The object that represents the connection to the server.
      */
-    private Connection con;
+    private XMPPConnection con;
 
     /**
      * Last received search form from the server.
@@ -41,10 +41,10 @@ public class UserSearchManager {
     /**
      * Creates a new UserSearchManager.
      *
-     * @param con the Connection to use.
+     * @param con the XMPPConnection to use.
      * @param searchService the user search service name.
      */
-    public UserSearchManager(Connection con, String searchService) {
+    public UserSearchManager(XMPPConnection con, String searchService) {
         this.con = con;
         this.searchService = searchService;
     }

@@ -45,7 +45,7 @@ public interface JabberLoginStrategy
     /**
      * Performs the login for the specified connection.
      *
-     * @param connection Connection  to login
+     * @param connection XMPPConnection  to login
      * @param userName userName to be used for the login.
      * @param resource the XMPP resource
      * @return true to continue connecting, false to abort

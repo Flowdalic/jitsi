@@ -412,7 +412,7 @@ public class InfoRetreiver
      * @throws XMPPException if something went wrong during VCard loading
      */
     public void load(VCard vcard,
-                     Connection connection,
+                     XMPPConnection connection,
                      String user,
                      long timeout)
         throws XMPPException

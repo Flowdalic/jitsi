@@ -96,7 +96,7 @@ public class FTPUtils
        String code = getResponseCode();
        if(!code.equals("220"))
        {
-           throw new Exception("Connection Error.");
+           throw new Exception("XMPPConnection Error.");
        }
     }
 

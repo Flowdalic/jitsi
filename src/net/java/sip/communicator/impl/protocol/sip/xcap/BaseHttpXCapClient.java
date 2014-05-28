@@ -185,7 +185,7 @@ public abstract class BaseHttpXCapClient implements HttpXCapClient
             httpClient = createHttpClient();
 
             HttpGet getMethod = new HttpGet(uri);
-            getMethod.setHeader("Connection", "close");
+            getMethod.setHeader("XMPPConnection", "close");
 
             HttpResponse response = httpClient.execute(getMethod);
             XCapHttpResponse result = createResponse(response);
@@ -283,7 +283,7 @@ public abstract class BaseHttpXCapClient implements HttpXCapClient
 
             URI resourceUri = getResourceURI(resource.getId());
             HttpPut putMethod = new HttpPut(resourceUri);
-            putMethod.setHeader("Connection", "close");
+            putMethod.setHeader("XMPPConnection", "close");
             StringEntity stringEntity = new StringEntity(resource.getContent());
             stringEntity.setContentType(resource.getContentType());
             stringEntity.setContentEncoding("UTF-8");
@@ -334,7 +334,7 @@ public abstract class BaseHttpXCapClient implements HttpXCapClient
 
             URI resourceUri = getResourceURI(resourceId);
             HttpDelete deleteMethod = new HttpDelete(resourceUri);
-            deleteMethod.setHeader("Connection", "close");
+            deleteMethod.setHeader("XMPPConnection", "close");
 
             if (logger.isDebugEnabled())
             {

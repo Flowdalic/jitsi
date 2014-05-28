@@ -392,7 +392,7 @@ public class IcqTesterAgent
                 else if (event.getNewState() == State.FAILED
                          || event.getNewState() == State.DISCONNECTED)
                 {
-                    logger.error("AIM Connection DISCONNECTED for "
+                    logger.error("AIM XMPPConnection DISCONNECTED for "
                                  + getIcqUIN() + "!");
                     connectionLock.notifyAll();
                 }

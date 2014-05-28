@@ -127,7 +127,7 @@ public class ReconnectPluginActivator
      * way to differ our unregister calls from calls coming from user, wanting
      * to stop all reconnects.
      * Providers REMOVED:
-     * - Provider is Connection failed.
+     * - Provider is XMPPConnection failed.
      * - Provider is registered/unregistered
      * Providers ADDED:
      * - Provider is about to be unregistered
@@ -747,7 +747,7 @@ public class ReconnectPluginActivator
 
                 if(logger.isTraceEnabled())
                 {
-                    logger.trace("Got Connection Failed for " + pp);
+                    logger.trace("Got XMPPConnection Failed for " + pp);
                     traceCurrentPPState();
                 }
             }

@@ -59,7 +59,7 @@ public class ProtocolProviderServiceSSHImpl
     private static ServiceReference ppUIServiceRef;
 
     /**
-     * Connection timeout to a remote server in milliseconds
+     * XMPPConnection timeout to a remote server in milliseconds
      */
     private static int connectionTimeout = 30000;
 
@@ -116,7 +116,7 @@ public class ProtocolProviderServiceSSHImpl
         }
         catch(NumberFormatException ex)
         {
-            logger.error("Connection Timeout set to 30 seconds");
+            logger.error("XMPPConnection Timeout set to 30 seconds");
         }
     }
 
@@ -429,11 +429,11 @@ public class ProtocolProviderServiceSSHImpl
             sshContact.setSSHSession(null);
             JOptionPane.showMessageDialog(
                     null,
-                    "SSH Connection attempt to "
+                    "SSH XMPPConnection attempt to "
                     + sshContact.getHostName() + " timed out");
 
             // error codes are not defined yet
-            throw new OperationFailedException("SSH Connection attempt to " +
+            throw new OperationFailedException("SSH XMPPConnection attempt to " +
                     sshContact.getHostName() + " timed out", 2);
         }
 

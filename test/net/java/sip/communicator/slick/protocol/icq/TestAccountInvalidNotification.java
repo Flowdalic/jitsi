@@ -79,6 +79,6 @@ public class TestAccountInvalidNotification extends TestCase
         fail("Registering the IcqTesterAgent on icq has failed. "
             +"Possible reasons: authentification failure (wrong ICQ "
             +"account number, no password, wrong password), "
-            +"or Connection rate limit exceeded.");
+            +"or XMPPConnection rate limit exceeded.");
     }
 }

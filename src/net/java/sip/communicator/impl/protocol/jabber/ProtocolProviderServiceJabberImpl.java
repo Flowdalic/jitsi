@@ -448,7 +448,7 @@ public class ProtocolProviderServiceJabberImpl
     }
 
     /**
-     * Starts the registration process. Connection details such as
+     * Starts the registration process. XMPPConnection details such as
      * registration server, user name/number are provided through the
      * configuration service through implementation specific properties.
      *
@@ -1138,7 +1138,7 @@ public class ProtocolProviderServiceJabberImpl
 
         if(connection != null)
         {
-            logger.error("Connection is not null and isConnected:"
+            logger.error("XMPPConnection is not null and isConnected:"
                 + connection.isConnected(),
                 new Exception("Trace possible duplicate connections: " +
                     getAccountID().getAccountAddress()));
@@ -1235,7 +1235,7 @@ public class ProtocolProviderServiceJabberImpl
             // addConnectionListener is not handled properly
             disconnectAndCleanConnection();
 
-            logger.error("Connection not established, server not found!");
+            logger.error("XMPPConnection not established, server not found!");
 
             eventDuringLogin = null;
 

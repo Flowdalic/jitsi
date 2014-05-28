@@ -351,7 +351,7 @@ public class OperationSetDesktopSharingServerJabberImpl
             RegistrationStateChangeEvent evt,
             PacketListener packetListener,
             PacketFilter packetFilter,
-            Connection connection)
+            XMPPConnection connection)
     {
         if(connection == null)
             return;
@@ -554,7 +554,7 @@ public class OperationSetDesktopSharingServerJabberImpl
                     inputIQ.setFrom(parentProvider.getOurJID());
                     inputIQ.setTo(callPeer.getAddress());
 
-                    Connection connection = parentProvider.getConnection();
+                    XMPPConnection connection = parentProvider.getConnection();
                     PacketCollector collector
                         = connection.createPacketCollector(
                             new PacketIDFilter(inputIQ.getPacketID()));

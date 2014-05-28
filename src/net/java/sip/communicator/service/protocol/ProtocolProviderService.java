@@ -50,7 +50,7 @@ public interface ProtocolProviderService
     public static final int BIND_RETRIES_DEFAULT_VALUE = 50;
 
     /**
-     * Starts the registration process. Connection details such as
+     * Starts the registration process. XMPPConnection details such as
      * registration server, user name/number are provided through the
      * configuration service through implementation specific properties.
      *

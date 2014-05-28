@@ -20,17 +20,17 @@ public interface GoogleContactsConnection
     public enum ConnectionStatus
     {
         /**
-         * Connection has failed due to invalid credentials.
+         * XMPPConnection has failed due to invalid credentials.
          */
         ERROR_INVALID_CREDENTIALS,
 
         /**
-         * Connection has failed due to unknown reason.
+         * XMPPConnection has failed due to unknown reason.
          */
         ERROR_UNKNOWN,
 
         /**
-         * Connection has succeed.
+         * XMPPConnection has succeed.
          */
         SUCCESS;
     }

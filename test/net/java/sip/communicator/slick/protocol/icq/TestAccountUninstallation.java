@@ -358,7 +358,7 @@ public class TestAccountUninstallation
 
             if(evt.getNewState().equals( RegistrationState.UNREGISTERED))
             {
-                logger.debug("Connection FAILED!");
+                logger.debug("XMPPConnection FAILED!");
                 stateRecieved = evt.getNewState();
                 eventReason = evt.getReasonCode();
 

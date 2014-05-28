@@ -196,7 +196,7 @@ public class ProtocolProviderServiceIcqImpl
     }
 
     /**
-     * Starts the registration process. Connection details such as
+     * Starts the registration process. XMPPConnection details such as
      * registration server, user name/number are provided through the
      * configuration service through implementation specific properties.
      *
@@ -697,7 +697,7 @@ public class ProtocolProviderServiceIcqImpl
     private class AimConnStateListener implements StateListener
     {
         /**
-         * Connection state changes being reported here.
+         * XMPPConnection state changes being reported here.
          * @param event
          */
         public void handleStateChange(StateEvent event)
@@ -741,7 +741,7 @@ public class ProtocolProviderServiceIcqImpl
                         .convertCodeToStringReason(discconectCode);
                     if (logger.isDebugEnabled())
                         logger.debug(
-                        "The aim Connection was disconnected! with reason : "
+                        "The aim XMPPConnection was disconnected! with reason : "
                         + reasonStr);
                 }
 
@@ -757,7 +757,7 @@ public class ProtocolProviderServiceIcqImpl
                 }
                 else
                     if (logger.isDebugEnabled())
-                        logger.debug("The aim Connection was disconnected!");
+                        logger.debug("The aim XMPPConnection was disconnected!");
             }
             else if(newState == State.FAILED)
             {
@@ -778,7 +778,7 @@ public class ProtocolProviderServiceIcqImpl
                     return;
                 }
                 else if (logger.isDebugEnabled())
-                    logger.debug("The aim Connection failed! "
+                    logger.debug("The aim XMPPConnection failed! "
                              + event.getNewStateInfo());
             }
 

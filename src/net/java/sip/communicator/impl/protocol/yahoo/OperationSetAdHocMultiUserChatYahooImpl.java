@@ -692,7 +692,7 @@ implements OperationSetAdHocMultiUserChat
         public void connectionClosed(SessionEvent ev)
         {
             if (logger.isDebugEnabled())
-                logger.debug("Connection Closed: " + ev.toString());
+                logger.debug("XMPPConnection Closed: " + ev.toString());
         }
     }
 

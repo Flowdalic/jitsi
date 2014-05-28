@@ -74,9 +74,9 @@ public class OperationSetFileTransferJabberImpl
     // ServiceDiscoveryManager
     static
     {
-        Connection.addConnectionCreationListener(new ConnectionCreationListener()
+        XMPPConnection.addConnectionCreationListener(new ConnectionCreationListener()
         {
-            public void connectionCreated(Connection connection)
+            public void connectionCreated(XMPPConnection connection)
             {
                 FileTransferNegotiator.getInstanceFor(connection);
             }
