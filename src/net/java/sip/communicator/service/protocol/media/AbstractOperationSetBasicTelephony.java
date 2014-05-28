@@ -14,6 +14,7 @@ import net.java.sip.communicator.service.protocol.event.*;
 import net.java.sip.communicator.util.*;
 
 import org.jitsi.service.neomedia.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 
 /**
  * Represents a default implementation of <tt>OperationSetBasicTelephony</tt> in
@@ -114,10 +115,11 @@ public abstract class AbstractOperationSetBasicTelephony
      * {@inheritDoc}
      *
      * Always throws an exception.
+     * @throws NotConnectedException 
      */
     @Override
     public Call createCall(ConferenceDescription cd, ChatRoom chatRoom)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         throw new OperationFailedException("Creating a call with a" +
                 " ConferenceDescription is not implemented in " + getClass(),

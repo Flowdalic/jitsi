@@ -14,6 +14,7 @@ import net.java.sip.communicator.service.protocol.event.*;
 import net.java.sip.communicator.util.*;
 
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.packet.*;
@@ -72,8 +73,7 @@ public class OperationSetGenericNotificationsJabberImpl
                         new RegistrationStateListener());
 
         // register the notification event Extension in the smack library
-        ProviderManager.getInstance()
-            .addIQProvider(NotificationEventIQ.ELEMENT_NAME,
+        ProviderManager.addIQProvider(NotificationEventIQ.ELEMENT_NAME,
                            NotificationEventIQ.NAMESPACE,
                            new NotificationEventIQProvider());
     }
@@ -84,11 +84,12 @@ public class OperationSetGenericNotificationsJabberImpl
      * @param contact    the contact to receive the notification.
      * @param eventName  the event name of the notification.
      * @param eventValue the event value of the notification.
+     * @throws NotConnectedException 
      */
     public void notifyForEvent(
             Contact contact,
             String eventName,
-            String eventValue)
+            String eventValue) throws NotConnectedException
     {
         // if we are not registered do nothing
         if(!jabberProvider.isRegistered())
@@ -132,12 +133,13 @@ public class OperationSetGenericNotificationsJabberImpl
      * @param eventName the event name of the notification.
      * @param eventValue the event value of the notification.
      * @param source the source that will be reported in the event.
+     * @throws NotConnectedException 
      */
     public void notifyForEvent(
             String jid,
             String eventName,
             String eventValue,
-            String source)
+            String source) throws NotConnectedException
     {
         // if we are not registered do nothing
         if(!jabberProvider.isRegistered())

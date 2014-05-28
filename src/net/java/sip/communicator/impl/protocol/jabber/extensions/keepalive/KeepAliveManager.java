@@ -8,6 +8,7 @@ import net.java.sip.communicator.service.protocol.event.*;
 import net.java.sip.communicator.util.*;
 
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smack.provider.*;
 import org.jivesoftware.smack.util.*;
@@ -71,8 +72,7 @@ public class KeepAliveManager
 
         // register the KeepAlive Extension in the smack library
         // used only if somebody ping us
-        ProviderManager.getInstance()
-            .addIQProvider(KeepAliveEvent.ELEMENT_NAME,
+        ProviderManager.addIQProvider(KeepAliveEvent.ELEMENT_NAME,
                            KeepAliveEvent.NAMESPACE,
                            new KeepAliveEventProvider());
     }
@@ -116,10 +116,8 @@ public class KeepAliveManager
             keepAliveSendTask = new KeepAliveSendTask();
             waitingForPacketWithID = null;
 
-            keepAliveCheckInterval =
-                SmackConfiguration.getKeepAliveInterval();
-            if(keepAliveCheckInterval == 0)
-                keepAliveCheckInterval = 30000;
+            // TODO Smack 4 Upgrade: Keep Alive is now supplied by Smack's own PingManager
+            keepAliveCheckInterval = 30000;
 
             keepAliveTimer = new Timer("Jabber keepalive timer for <"
                 + parentProvider.getAccountID() + ">", true);
@@ -174,8 +172,15 @@ public class KeepAliveManager
                && evt.getFrom()
                     .equals(parentProvider.getAccountID().getService()))
             {
-                parentProvider.getConnection().sendPacket(
-                    IQ.createResultIQ(evt));
+                try
+                {
+                    parentProvider.getConnection().sendPacket(
+                        IQ.createResultIQ(evt));
+                }
+                catch (NotConnectedException e)
+                {
+                    // TODO Smack 4 upgrade
+                }
             }
         }
     }

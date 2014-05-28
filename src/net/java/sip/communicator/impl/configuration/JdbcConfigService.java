@@ -77,9 +77,9 @@ public final class JdbcConfigService
         = HashMultimap.create();
 
     /**
-     * XMPPConnection to the JDBC database.
+     * Connection to the JDBC database.
      */
-    private XMPPConnection connection;
+    private Connection connection;
 
     // SQL statements for queries against the database
     private PreparedStatement selectExact;

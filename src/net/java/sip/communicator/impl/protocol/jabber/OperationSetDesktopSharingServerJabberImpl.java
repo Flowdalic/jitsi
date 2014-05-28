@@ -21,9 +21,10 @@ import org.jitsi.service.neomedia.*;
 import org.jitsi.service.neomedia.device.*;
 import org.jitsi.service.neomedia.format.*;
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.*;
-import org.jivesoftware.smackx.packet.*;
+import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 
 /**
  * Implements all desktop sharing server-side related functions for Jabber
@@ -240,7 +241,7 @@ public class OperationSetDesktopSharingServerJabberImpl
                 */
             }
         }
-        catch (XMPPException ex)
+        catch (Exception ex)
         {
             logger.warn("could not retrieve info for " + fullCalleeURI, ex);
         }
@@ -300,8 +301,9 @@ public class OperationSetDesktopSharingServerJabberImpl
      * and mouse events received from peer.
      *
      * @param callPeer call peer that will take control on local computer
+     * @throws NotConnectedException 
      */
-    public void enableRemoteControl(CallPeer callPeer)
+    public void enableRemoteControl(CallPeer callPeer) throws NotConnectedException
     {
         callPeer.addCallPeerListener(callPeerListener);
         this.modifyRemoteControl(callPeer, true);
@@ -312,8 +314,9 @@ public class OperationSetDesktopSharingServerJabberImpl
      * and mouse events received from peer.
      *
      * @param callPeer call peer that will stop controlling on local computer
+     * @throws NotConnectedException 
      */
-    public void disableRemoteControl(CallPeer callPeer)
+    public void disableRemoteControl(CallPeer callPeer) throws NotConnectedException
     {
         this.modifyRemoteControl(callPeer, false);
         callPeer.removeCallPeerListener(callPeerListener);
@@ -373,8 +376,9 @@ public class OperationSetDesktopSharingServerJabberImpl
      * method based on their action.
      *
      * @param packet the packet to process.
+     * @throws NotConnectedException 
      */
-    public void processPacket(Packet packet)
+    public void processPacket(Packet packet) throws NotConnectedException
     {
         InputEvtIQ inputIQ = (InputEvtIQ)packet;
 
@@ -529,8 +533,9 @@ public class OperationSetDesktopSharingServerJabberImpl
      * @param callPeer call peer that will stop controlling on local computer.
      * @param enables True to enable remote peer to gain remote control on our
      * PC. False Otherwise.
+     * @throws NotConnectedException 
      */
-    public void modifyRemoteControl(CallPeer callPeer, boolean enables)
+    public void modifyRemoteControl(CallPeer callPeer, boolean enables) throws NotConnectedException
     {
         synchronized(callPeers)
         {
@@ -560,8 +565,7 @@ public class OperationSetDesktopSharingServerJabberImpl
                             new PacketIDFilter(inputIQ.getPacketID()));
 
                     connection.sendPacket(inputIQ);
-                    Packet p = collector.nextResult(
-                            SmackConfiguration.getPacketReplyTimeout());
+                    Packet p = collector.nextResult();
                     if(enables)
                     {
                         receivedResponseToIqStart(callPeer, p);

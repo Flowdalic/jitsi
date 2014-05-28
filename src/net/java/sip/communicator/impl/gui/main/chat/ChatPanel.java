@@ -38,6 +38,7 @@ import net.java.sip.communicator.util.Logger;
 import net.java.sip.communicator.util.skin.*;
 
 import org.jitsi.util.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 
 /**
  * The <tt>ChatPanel</tt> is the panel, where users can write and send messages,
@@ -2588,10 +2589,11 @@ public class ChatPanel
      * @param inviteChatTransport the chat transport to use to send the invite
      * @param chatContacts the contacts to invite
      * @param reason the reason of the invitation
+     * @throws NotConnectedException 
      */
     public void inviteContacts( ChatTransport inviteChatTransport,
                                 Collection<String> chatContacts,
-                                String reason)
+                                String reason) throws NotConnectedException
     {
         ChatSession conferenceChatSession = null;
 

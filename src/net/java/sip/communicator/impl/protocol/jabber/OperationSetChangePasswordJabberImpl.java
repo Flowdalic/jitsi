@@ -50,7 +50,7 @@ public class OperationSetChangePasswordJabberImpl
             throws IllegalStateException, OperationFailedException
     {
         org.jivesoftware.smack.AccountManager accountManager
-                = new org.jivesoftware.smack.AccountManager(
+                = org.jivesoftware.smack.AccountManager.getInstance(
                                         protocolProvider.getConnection());
 
         try

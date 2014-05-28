@@ -36,6 +36,7 @@ import org.jitsi.service.neomedia.device.*;
 import org.jitsi.service.neomedia.format.*;
 import org.jitsi.service.resources.*;
 import org.jitsi.util.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 
 /**
  * The <tt>CallManager</tt> is the one that handles calls. It contains also
@@ -2891,6 +2892,13 @@ public class CallManager
                                 "Could not answer " + peer + " with video"
                                     + " because of the following exception: "
                                     + ofe);
+                    }
+                    catch (NotConnectedException e)
+                    {
+                        logger.error(
+                            "Could not answer " + peer + " with video"
+                                + " because of the following exception: "
+                                + e);
                     }
                 }
                 else

@@ -76,14 +76,13 @@ public class OperationSetWhiteboardingJabberImpl
             new RegistrationStateListener());
 
         // Add the custom WhiteboardObjectJabberProvider to the Smack library
-        ProviderManager pManager = ProviderManager.getInstance();
 
-        pManager.addExtensionProvider(
+        ProviderManager.addExtensionProvider(
             WhiteboardObjectPacketExtension.ELEMENT_NAME,
             WhiteboardObjectPacketExtension.NAMESPACE,
             new WhiteboardObjectJabberProvider());
 
-        pManager.addExtensionProvider(
+        ProviderManager.addExtensionProvider(
             WhiteboardSessionPacketExtension.ELEMENT_NAME,
             WhiteboardSessionPacketExtension.NAMESPACE,
             new WhiteboardObjectJabberProvider());

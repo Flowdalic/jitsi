@@ -8,7 +8,6 @@ package net.java.sip.communicator.impl.protocol.jabber;
 
 import java.util.*;
 
-import net.java.sip.communicator.impl.protocol.jabber.extensions.caps.*;
 import net.java.sip.communicator.impl.protocol.jabber.extensions.messagecorrection.*;
 import net.java.sip.communicator.service.protocol.*;
 import net.java.sip.communicator.service.protocol.event.*;

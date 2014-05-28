@@ -15,7 +15,6 @@ import javax.sip.header.*;
 import javax.sip.message.*;
 
 import gov.nist.javax.sip.stack.*;
-
 import net.java.sip.communicator.impl.protocol.sip.sdp.*;
 import net.java.sip.communicator.service.protocol.*;
 import net.java.sip.communicator.service.protocol.event.*;
@@ -25,6 +24,7 @@ import net.java.sip.communicator.util.*;
 import org.jitsi.service.configuration.*;
 import org.jitsi.service.neomedia.*;
 import org.jitsi.service.neomedia.MediaType;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 
 /**
  * A SIP implementation of the abstract <tt>Call</tt> class encapsulating SIP
@@ -132,7 +132,14 @@ public class CallSipImpl
         }
         finally
         {
-            super.conferenceFocusChanged(oldValue, newValue);
+            try
+            {
+                super.conferenceFocusChanged(oldValue, newValue);
+            }
+            catch (NotConnectedException e)
+            {
+                // TODO Smack 4
+            }
         }
     }
 

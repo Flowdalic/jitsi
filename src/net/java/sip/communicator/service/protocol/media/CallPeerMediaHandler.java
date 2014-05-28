@@ -22,6 +22,7 @@ import org.jitsi.service.neomedia.device.*;
 import org.jitsi.service.neomedia.event.*;
 import org.jitsi.service.neomedia.format.*;
 import org.jitsi.util.event.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 
 /**
  * A utility class implementing media control code shared between current
@@ -410,8 +411,9 @@ public abstract class CallPeerMediaHandler<T extends MediaAwareCallPeer<?,?,?>>
      * Closes and null-ifies all streams and connectors and readies this media
      * handler for garbage collection (or reuse). Synchronized if any other
      * stream operations are in process we won't interrupt them.
+     * @throws NotConnectedException 
      */
-    public synchronized void close()
+    public synchronized void close() throws NotConnectedException
     {
         closeStream(MediaType.AUDIO);
         closeStream(MediaType.VIDEO);
@@ -430,8 +432,9 @@ public abstract class CallPeerMediaHandler<T extends MediaAwareCallPeer<?,?,?>>
      *
      * @param mediaType the <tt>MediaType</tt> that we'd like to stop a stream
      * for.
+     * @throws NotConnectedException 
      */
-    protected void closeStream(MediaType mediaType)
+    protected void closeStream(MediaType mediaType) throws NotConnectedException
     {
         if (logger.isDebugEnabled())
             logger.debug("Closing " + mediaType + " stream for " + getPeer());
@@ -1606,8 +1609,9 @@ public abstract class CallPeerMediaHandler<T extends MediaAwareCallPeer<?,?,?>>
      * @param locallyOnHold <tt>true</tt> if we are to make our streams
      * stop transmitting and <tt>false</tt> if we are to start transmitting
      * again.
+     * @throws NotConnectedException 
      */
-    public void setLocallyOnHold(boolean locallyOnHold)
+    public void setLocallyOnHold(boolean locallyOnHold) throws NotConnectedException
     {
         if (logger.isDebugEnabled())
             logger.debug("Setting locally on hold: " + locallyOnHold);
@@ -1880,9 +1884,10 @@ public abstract class CallPeerMediaHandler<T extends MediaAwareCallPeer<?,?,?>>
      * @throws IllegalStateException if this method is called without this
      * handler having first seen a media description or having generated an
      * offer.
+     * @throws NotConnectedException 
      */
     public void start()
-        throws IllegalStateException
+        throws IllegalStateException, NotConnectedException
     {
         if (logger.isInfoEnabled())
             logger.info("Starting");

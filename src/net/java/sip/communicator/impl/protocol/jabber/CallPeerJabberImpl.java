@@ -18,10 +18,11 @@ import net.java.sip.communicator.util.*;
 
 import org.jitsi.service.neomedia.*;
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smack.util.*;
-import org.jivesoftware.smackx.packet.*;
+import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 
 /**
  * Implements a Jabber <tt>CallPeer</tt>.
@@ -123,9 +124,10 @@ public class CallPeerJabberImpl
      * Send a session-accept <tt>JingleIQ</tt> to this <tt>CallPeer</tt>
      * @throws OperationFailedException if we fail to create or send the
      * response.
+     * @throws NotConnectedException 
      */
     public synchronized void answer()
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         Iterable<ContentPacketExtension> answer;
         CallPeerMediaHandlerJabberImpl mediaHandler = getMediaHandler();
@@ -234,10 +236,11 @@ public class CallPeerJabberImpl
      * @param reasonOtherExtension the <tt>PacketExtension</tt>, if any, to be
      * set on the <tt>ReasonPacketExtension</tt> as the value of its
      * <tt>otherExtension</tt> property
+     * @throws NotConnectedException 
      */
     public void hangup(boolean failed,
                        String reasonText,
-                       PacketExtension reasonOtherExtension)
+                       PacketExtension reasonOtherExtension) throws NotConnectedException
     {
         CallPeerState prevPeerState = getState();
 
@@ -333,10 +336,11 @@ public class CallPeerJabberImpl
      * {@link JingleIQ} which is to initiate the session with this
      * <tt>CallPeerJabberImpl</tt>
      * @throws OperationFailedException exception
+     * @throws NotConnectedException 
      */
     protected synchronized void initiateSession(
             Iterable<PacketExtension> sessionInitiateExtensions)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         initiator = false;
 
@@ -402,8 +406,9 @@ public class CallPeerJabberImpl
      *
      * @param content The {@link JingleIQ} that contains content that remote
      * peer has accepted
+     * @throws NotConnectedException 
      */
-    public void processContentAccept(JingleIQ content)
+    public void processContentAccept(JingleIQ content) throws NotConnectedException
     {
         List<ContentPacketExtension> contents = content.getContentList();
         CallPeerMediaHandlerJabberImpl mediaHandler = getMediaHandler();
@@ -444,8 +449,9 @@ public class CallPeerJabberImpl
      *
      * @param content The {@link JingleIQ} that contains content that remote
      * peer wants to be added
+     * @throws NotConnectedException 
      */
-    public void processContentAdd(final JingleIQ content)
+    public void processContentAdd(final JingleIQ content) throws NotConnectedException
     {
         CallPeerMediaHandlerJabberImpl mediaHandler = getMediaHandler();
         List<ContentPacketExtension> contents = content.getContentList();
@@ -498,7 +504,14 @@ public class CallPeerJabberImpl
                         {
                         }
 
-                        processContentAdd(content);
+                        try
+                        {
+                            processContentAdd(content);
+                        }
+                        catch (NotConnectedException e)
+                        {
+                            // TODO Smack 4
+                        }
                         contentAddWithNoCands = false;
                     }
                 }.start();
@@ -575,8 +588,9 @@ public class CallPeerJabberImpl
      *
      * @param content The {@link JingleIQ} that contains content that remote
      * peer wants to be modified
+     * @throws NotConnectedException 
      */
-    public void processContentModify(JingleIQ content)
+    public void processContentModify(JingleIQ content) throws NotConnectedException
     {
         ContentPacketExtension ext = content.getContentList().get(0);
         MediaType mediaType = getMediaType(ext);
@@ -618,8 +632,9 @@ public class CallPeerJabberImpl
      * Processes the content-reject {@link JingleIQ}.
      *
      * @param content The {@link JingleIQ}
+     * @throws NotConnectedException 
      */
-    public void processContentReject(JingleIQ content)
+    public void processContentReject(JingleIQ content) throws NotConnectedException
     {
         if(content.getContentList().isEmpty())
         {
@@ -689,8 +704,9 @@ public class CallPeerJabberImpl
      * Processes a session-accept {@link JingleIQ}.
      *
      * @param sessionInitIQ The session-accept {@link JingleIQ} to process.
+     * @throws NotConnectedException 
      */
-    public void processSessionAccept(JingleIQ sessionInitIQ)
+    public void processSessionAccept(JingleIQ sessionInitIQ) throws NotConnectedException
     {
         this.sessionInitIQ = sessionInitIQ;
 
@@ -741,8 +757,9 @@ public class CallPeerJabberImpl
      * content.
      *
      * @param info the {@link SessionInfoPacketExtension} that we just received.
+     * @throws NotConnectedException 
      */
-    public void processSessionInfo(SessionInfoPacketExtension info)
+    public void processSessionInfo(SessionInfoPacketExtension info) throws NotConnectedException
     {
         switch (info.getType())
         {
@@ -770,8 +787,9 @@ public class CallPeerJabberImpl
      *
      * @param sessionInitIQ The {@link JingleIQ} that created the session that
      * we are handling here.
+     * @throws NotConnectedException 
      */
-    protected synchronized void processSessionInitiate(JingleIQ sessionInitIQ)
+    protected synchronized void processSessionInitiate(JingleIQ sessionInitIQ) throws NotConnectedException
     {
         // Do initiate the session.
         this.sessionInitIQ = sessionInitIQ;
@@ -956,8 +974,9 @@ public class CallPeerJabberImpl
      * Processes the <tt>transport-info</tt> {@link JingleIQ}.
      *
      * @param jingleIQ the <tt>transport-info</tt> {@link JingleIQ} to process
+     * @throws NotConnectedException 
      */
-    public void processTransportInfo(JingleIQ jingleIQ)
+    public void processTransportInfo(JingleIQ jingleIQ) throws NotConnectedException
     {
         /*
          * The transport-info action is used to exchange transport candidates so
@@ -1019,9 +1038,10 @@ public class CallPeerJabberImpl
      *
      * @throws OperationFailedException if we fail to construct or send the
      * INVITE request putting the remote side on/off hold.
+     * @throws NotConnectedException 
      */
     public void putOnHold(boolean onHold)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         CallPeerMediaHandlerJabberImpl mediaHandler = getMediaHandler();
 
@@ -1052,8 +1072,9 @@ public class CallPeerJabberImpl
 
     /**
      * Send a <tt>content-add</tt> to add video setup.
+     * @throws NotConnectedException 
      */
-    private void sendAddVideoContent()
+    private void sendAddVideoContent() throws NotConnectedException
     {
         List<ContentPacketExtension> contents;
 
@@ -1082,8 +1103,9 @@ public class CallPeerJabberImpl
     /**
      * Sends a <tt>content</tt> message to reflect changes in the setup such as
      * the local peer/user becoming a conference focus.
+     * @throws NotConnectedException 
      */
-    public void sendCoinSessionInfo()
+    public void sendCoinSessionInfo() throws NotConnectedException
     {
         JingleIQ sessionInfoIQ
             = JinglePacketFactory.createSessionInfo(
@@ -1165,8 +1187,9 @@ public class CallPeerJabberImpl
      * <tt>senders</tt> field changes), content-add or content-remove.
      *
      * @return <tt>true</tt> if a jingle <tt>content</tt> message was sent.
+     * @throws NotConnectedException 
      */
-    public boolean sendModifyVideoContent()
+    public boolean sendModifyVideoContent() throws NotConnectedException
     {
         CallPeerMediaHandlerJabberImpl mediaHandler = getMediaHandler();
         MediaDirection direction = getDirectionForJingle(MediaType.VIDEO);
@@ -1259,8 +1282,9 @@ public class CallPeerJabberImpl
     /**
      * Send a <tt>content</tt> message to reflect change in video setup (start
      * or stop).
+     * @throws NotConnectedException 
      */
-    public void sendModifyVideoResolutionContent()
+    public void sendModifyVideoResolutionContent() throws NotConnectedException
     {
         CallPeerMediaHandlerJabberImpl mediaHandler = getMediaHandler();
         ContentPacketExtension remoteContent
@@ -1312,8 +1336,9 @@ public class CallPeerJabberImpl
 
     /**
      * Send a <tt>content-remove</tt> to remove video setup.
+     * @throws NotConnectedException 
      */
-    private void sendRemoveVideoContent()
+    private void sendRemoveVideoContent() throws NotConnectedException
     {
         CallPeerMediaHandlerJabberImpl mediaHandler = getMediaHandler();
 
@@ -1349,8 +1374,9 @@ public class CallPeerJabberImpl
      * @param contents the local candidate addresses to be sent from the local
      * peer to the remote peer using the <tt>transport-info</tt>
      * {@link JingleIQ}
+     * @throws NotConnectedException 
      */
-    protected void sendTransportInfo(Iterable<ContentPacketExtension> contents)
+    protected void sendTransportInfo(Iterable<ContentPacketExtension> contents) throws NotConnectedException
     {
         // if the call is canceled, do not start sending candidates in
         // transport-info
@@ -1376,7 +1402,7 @@ public class CallPeerJabberImpl
                     new PacketIDFilter(transportInfo.getPacketID()));
 
         protocolProvider.getConnection().sendPacket(transportInfo);
-        collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
+        collector.nextResult();
         collector.cancel();
     }
 
@@ -1413,6 +1439,11 @@ public class CallPeerJabberImpl
                 logger.error("Failed to update call video state after " +
                         "'hold' status removed for "+this);
             }
+            catch (NotConnectedException e)
+            {
+                logger.error("Failed to update call video state after " +
+                    "'hold' status removed for "+this);
+            }
         }
     }
 
@@ -1426,9 +1457,10 @@ public class CallPeerJabberImpl
      * local peer and the callee in the case of attended transfer; <tt>null</tt>
      * in the case of unattended transfer
      * @throws OperationFailedException if something goes wrong
+     * @throws NotConnectedException 
      */
     protected void transfer(String to, String sid)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         JingleIQ transferSessionInfo = new JingleIQ();
         ProtocolProviderServiceJabberImpl protocolProvider
@@ -1481,8 +1513,7 @@ public class CallPeerJabberImpl
                 new PacketIDFilter(transferSessionInfo.getPacketID()));
         protocolProvider.getConnection().sendPacket(transferSessionInfo);
 
-        Packet result
-            = collector.nextResult(SmackConfiguration.getPacketReplyTimeout());
+        Packet result = collector.nextResult();
 
         if(result == null)
         {

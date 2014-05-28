@@ -12,6 +12,7 @@ import java.util.*;
 import net.java.sip.communicator.service.protocol.event.*;
 
 import org.jitsi.service.neomedia.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 
 /**
  * An Operation Set defining all basic telephony operations such as conducting
@@ -259,11 +260,12 @@ public interface OperationSetBasicTelephony<T extends ProtocolProviderService>
      * failure, then this string could indicate the reason of the failure
      *
      * @throws OperationFailedException if we fail to terminate the call.
+     * @throws NotConnectedException 
      */
     public void hangupCallPeer(CallPeer peer,
                                int reasonCode,
                                String reason)
-        throws OperationFailedException;
+        throws OperationFailedException, NotConnectedException;
 
     /**
      * Returns an iterator over all currently active calls.

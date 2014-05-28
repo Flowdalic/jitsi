@@ -14,8 +14,6 @@ import org.jivesoftware.smack.provider.*;
 import org.jivesoftware.smackx.*;
 import org.jivesoftware.smackx.bytestreams.ibb.provider.*;
 import org.jivesoftware.smackx.bytestreams.socks5.provider.*;
-import org.jivesoftware.smackx.packet.*;
-import org.jivesoftware.smackx.provider.*;
 
 /**
  * Our Provider Manager that loads providers and extensions we use.
@@ -24,27 +22,11 @@ import org.jivesoftware.smackx.provider.*;
  *
  * @author Damian Minkov
  */
-public class ProviderManagerExt
-    extends ProviderManager
-{
-    /**
-     * Logger of this class
-     */
-    private static final Logger logger =
-        Logger.getLogger(ProviderManagerExt.class);
-
+public class ProviderManagerExt {
     /**
      * Creates and loads the providers and extensions used by us.
      */
     ProviderManagerExt()
-    {
-        load();
-    }
-
-    /**
-     * Loads the providers and extensions used by us.
-     */
-    public void load()
     {
         //<!-- Private Data Storage -->
         //addProvider("query", "jabber:iq:private",
@@ -394,26 +376,7 @@ public class ProviderManagerExt
             String namespace,
             Class<?> provider)
     {
-        // Attempt to load the provider class and then create
-        // a new instance if it's an IQProvider. Otherwise, if it's
-        // an IQ class, add the class object itself, then we'll use
-        // reflection later to create instances of the class.
-        try
-        {
-            // Add the provider to the map.
-            if (IQProvider.class.isAssignableFrom(provider))
-            {
-                addIQProvider(elementName, namespace, provider.newInstance());
-            }
-            else if (IQ.class.isAssignableFrom(provider))
-            {
-                addIQProvider(elementName, namespace, provider);
-            }
-        }
-        catch (Throwable t)
-        {
-            logger.error("Error adding iq provider.", t);
-        }
+        ProviderManager.addIQProvider(elementName, namespace, provider);
     }
 
     /**
@@ -430,30 +393,6 @@ public class ProviderManagerExt
             String namespace,
             Class<?> provider)
     {
-        // Attempt to load the provider class and then create
-        // a new instance if it's a Provider. Otherwise, if it's
-        // a PacketExtension, add the class object itself and
-        // then we'll use reflection later to create instances
-        // of the class.
-        try
-        {
-            // Add the provider to the map.
-            if (PacketExtensionProvider.class.isAssignableFrom(provider))
-            {
-                addExtensionProvider(
-                        elementName,
-                        namespace,
-                        provider.newInstance());
-            }
-            else if (PacketExtension.class.isAssignableFrom(
-                    provider))
-            {
-                addExtensionProvider(elementName, namespace, provider);
-            }
-        }
-        catch (Throwable t)
-        {
-            logger.error("Error adding extension provider.", t);
-        }
+        ProviderManager.addExtensionProvider(elementName, namespace, provider);
     }
 }

@@ -8,9 +8,10 @@ package net.java.sip.communicator.impl.protocol.jabber;
 
 import java.util.*;
 
-import net.java.sip.communicator.service.protocol.*;
+import org.jivesoftware.smackx.xdata.Form;
+import org.jivesoftware.smackx.xdata.FormField;
 
-import org.jivesoftware.smackx.*;
+import net.java.sip.communicator.service.protocol.*;
 
 /**
  * The Jabber protocol implementation of the
@@ -92,13 +93,11 @@ public class ChatRoomConfigurationFormFieldJabberImpl
     public Iterator<String> getOptions()
     {
         List<String> options = new ArrayList<String>();
-        Iterator<FormField.Option> smackOptions = smackFormField.getOptions();
+        List<FormField.Option> smackOptions = smackFormField.getOptions();
 
-        while(smackOptions.hasNext())
+        for (FormField.Option option : smackOptions)
         {
-            FormField.Option smackOption = smackOptions.next();
-
-            options.add(smackOption.getValue());
+            options.add(option.getValue());
         }
 
         return Collections.unmodifiableList(options).iterator();
@@ -153,17 +152,15 @@ public class ChatRoomConfigurationFormFieldJabberImpl
      */
     public Iterator<?> getValues()
     {
-        Iterator<String> smackValues = smackFormField.getValues();
+        List<String> smackValues = smackFormField.getValues();
         Iterator<?> valuesIter;
 
         if(smackFormField.getType().equals(FormField.TYPE_BOOLEAN))
         {
             List<Boolean> values = new ArrayList<Boolean>();
 
-            while(smackValues.hasNext())
+            for (String smackValue : smackValues)
             {
-                String smackValue = smackValues.next();
-
                 values
                     .add(
                         (smackValue.equals("1") || smackValue.equals("true"))
@@ -174,7 +171,7 @@ public class ChatRoomConfigurationFormFieldJabberImpl
             valuesIter = values.iterator();
         }
         else
-            valuesIter = smackValues;
+            valuesIter = smackValues.iterator();
 
         return valuesIter;
     }

@@ -13,6 +13,7 @@ import java.util.List;
 
 import org.jitsi.service.neomedia.*;
 import org.jitsi.util.event.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 
 /**
  * Represents an <tt>OperationSet</tt> giving access to video-specific
@@ -249,9 +250,10 @@ public interface OperationSetVideoTelephony
      * @param peer the call peer that we'd like to answer.
      * @throws OperationFailedException with the corresponding code if we
      * encounter an error while performing this operation.
+     * @throws NotConnectedException 
      */
     public void answerVideoCallPeer(CallPeer peer)
-        throws OperationFailedException;
+        throws OperationFailedException, NotConnectedException;
 
     /**
      * Returns the quality control for video calls if any. It can be null if we

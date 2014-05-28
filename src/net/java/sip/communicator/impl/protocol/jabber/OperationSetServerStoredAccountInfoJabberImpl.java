@@ -16,7 +16,6 @@ import net.java.sip.communicator.service.protocol.event.*;
 import net.java.sip.communicator.util.*;
 
 import org.apache.commons.lang3.*;
-import org.jivesoftware.smack.*;
 
 /**
  * The Account Info Operation set is a means of accessing and modifying detailed
@@ -432,7 +431,7 @@ public class OperationSetServerStoredAccountInfoJabberImpl
         {
             vCard.save(jabberProvider.getConnection());
         }
-        catch (XMPPException xmppe)
+        catch (Exception xmppe)
         {
             logger.error("Error loading/saving vcard: ", xmppe);
             throw new OperationFailedException(

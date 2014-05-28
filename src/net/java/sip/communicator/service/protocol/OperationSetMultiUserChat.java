@@ -8,6 +8,10 @@ package net.java.sip.communicator.service.protocol;
 
 import java.util.*;
 
+import org.jivesoftware.smack.SmackException.NoResponseException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.XMPPException.XMPPErrorException;
+
 import net.java.sip.communicator.service.protocol.event.*;
 
 /**
@@ -32,9 +36,11 @@ public interface OperationSetMultiUserChat
      * the server.
      * @throws OperationNotSupportedException if the server does not support
      * multi-user chat
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
     public List<String> getExistingChatRooms()
-        throws OperationFailedException, OperationNotSupportedException;
+        throws OperationFailedException, OperationNotSupportedException, NoResponseException, NotConnectedException;
 
     /**
      * Returns a list of the chat rooms that we have joined and are currently
@@ -58,9 +64,12 @@ public interface OperationSetMultiUserChat
      * discover the room on the server.
      * @throws OperationNotSupportedException if the server does not support
      * multi-user chat
+     * @throws NotConnectedException 
+     * @throws XMPPErrorException 
+     * @throws NoResponseException 
      */
     public List<String> getCurrentlyJoinedChatRooms(ChatRoomMember chatRoomMember)
-        throws OperationFailedException, OperationNotSupportedException;
+        throws OperationFailedException, OperationNotSupportedException, NoResponseException, XMPPErrorException, NotConnectedException;
 
     /**
      * Creates a room with the named <tt>roomName</tt> and according to the
@@ -84,11 +93,13 @@ public interface OperationSetMultiUserChat
      *             if chat room creation is not supported by this server
      *
      * @return the newly created <tt>ChatRoom</tt> named <tt>roomName</tt>.
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
     public ChatRoom createChatRoom(String roomName,
                                    Map<String, Object> roomProperties)
         throws OperationFailedException,
-               OperationNotSupportedException;
+               OperationNotSupportedException, NoResponseException, NotConnectedException;
 
     /**
      * Returns a reference to a chatRoom named <tt>roomName</tt> or null
@@ -111,9 +122,10 @@ public interface OperationSetMultiUserChat
      *
      * @param invitation the invitation we are rejecting.
      * @param rejectReason the reason to reject the invitation (optional)
+     * @throws NotConnectedException 
      */
     public void rejectInvitation(ChatRoomInvitation invitation,
-        String rejectReason);
+        String rejectReason) throws NotConnectedException;
 
     /**
      * Adds a listener to invitation notifications. The listener will be fired

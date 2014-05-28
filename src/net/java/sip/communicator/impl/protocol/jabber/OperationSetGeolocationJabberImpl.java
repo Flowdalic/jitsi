@@ -14,6 +14,7 @@ import net.java.sip.communicator.service.protocol.event.*;
 import net.java.sip.communicator.util.*;
 
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smack.provider.*;
@@ -73,8 +74,7 @@ public class OperationSetGeolocationJabberImpl
             new RegistrationStateListener());
 
         // Add the custom GeolocationExtension to the Smack library
-        ProviderManager pManager = ProviderManager.getInstance();
-        pManager.addExtensionProvider(
+        ProviderManager.addExtensionProvider(
             GeolocationPacketExtensionProvider.ELEMENT_NAME
             , GeolocationPacketExtensionProvider.NAMESPACE
             , new GeolocationPacketExtensionProvider());
@@ -85,8 +85,9 @@ public class OperationSetGeolocationJabberImpl
      * presence message.
      *
      * @param geolocation our current Geolocation ready to be sent
+     * @throws NotConnectedException 
      */
-    public void publishGeolocation(Map<String, String> geolocation)
+    public void publishGeolocation(Map<String, String> geolocation) throws NotConnectedException
     {
         GeolocationPresence myGeolocPrez = new GeolocationPresence(opsetprez);
 

@@ -17,7 +17,7 @@ import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.filetransfer.*;
-import org.jivesoftware.smackx.packet.*;
+import org.jivesoftware.smackx.si.packet.StreamInitiation;
 
 /**
  * The Jabber protocol extension of the <tt>AbstractFileTransfer</tt>.

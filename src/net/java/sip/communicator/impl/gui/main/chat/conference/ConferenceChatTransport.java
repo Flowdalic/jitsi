@@ -9,6 +9,8 @@ package net.java.sip.communicator.impl.gui.main.chat.conference;
 
 import java.io.*;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import net.java.sip.communicator.impl.gui.main.chat.*;
 import net.java.sip.communicator.service.protocol.*;
 import net.java.sip.communicator.service.protocol.event.*;
@@ -239,8 +241,9 @@ public class ConferenceChatTransport
      *
      * @param contactAddress the address of the contact to invite
      * @param reason the reason for the invitation
+     * @throws NotConnectedException 
      */
-    public void inviteChatContact(String contactAddress, String reason)
+    public void inviteChatContact(String contactAddress, String reason) throws NotConnectedException
     {
         if(chatRoom != null)
             chatRoom.invite(contactAddress, reason);

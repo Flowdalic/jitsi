@@ -14,10 +14,11 @@ import net.java.sip.communicator.service.protocol.jabberconstants.*;
 import net.java.sip.communicator.util.*;
 
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smack.util.*;
-import org.jivesoftware.smackx.packet.*;
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 /**
  * The Jabber implementation of a Persistent Presence Operation set. This class
@@ -456,12 +457,13 @@ public class OperationSetPersistentPresenceJabberImpl
      *   registered.
      * @throws OperationFailedException with code NETWORK_FAILURE if
      *   publishing the status fails due to a network error.
+     * @throws NotConnectedException 
      */
     public void publishPresenceStatus(PresenceStatus status,
                                       String statusMessage)
         throws IllegalArgumentException,
                IllegalStateException,
-               OperationFailedException
+               OperationFailedException, NotConnectedException
     {
         assertConnected();
 
@@ -1045,17 +1047,15 @@ public class OperationSetPersistentPresenceJabberImpl
             return eventFired;
         }
 
-        Iterator<Presence> it =
+        List<Presence> presences =
             parentProvider.getConnection().getRoster()
                 .getPresences(contact.getAddress());
 
         // Choose the resource which has the highest priority AND supports
         // Jingle, if we have two resources with same priority take
         // the most available.
-        while(it.hasNext())
+        for(Presence presence : presences)
         {
-            Presence presence = it.next();
-
             String resource = StringUtils.parseResource(presence.getFrom());
 
             if (resource != null && resource.length() > 0)

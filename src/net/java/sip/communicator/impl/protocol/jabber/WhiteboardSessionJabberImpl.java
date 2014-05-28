@@ -15,10 +15,12 @@ import net.java.sip.communicator.service.protocol.whiteboardobjects.*;
 import net.java.sip.communicator.util.*;
 
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.*;
+import org.jivesoftware.smackx.xevent.MessageEventManager;
 
 /**
  * A representation of a <tt>WhiteboardSession</tt>.
@@ -185,8 +187,9 @@ public class WhiteboardSessionJabberImpl
      * whiteboard events will be delivered. Depending on the underlying protocol
      * and implementation leave() might cause the room to be destroyed if it has
      * been created by the local user.
+     * @throws NotConnectedException 
      */
-    public void leave()
+    public void leave() throws NotConnectedException
     {
         try
         {

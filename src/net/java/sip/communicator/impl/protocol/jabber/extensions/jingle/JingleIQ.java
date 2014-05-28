@@ -122,7 +122,12 @@ public class JingleIQ extends IQ
         bldr.append(" " + SID_ATTR_NAME
                             + "='" + getSID() + "'");
 
-        String extensionsXML = getExtensionsXML();
+        String extensionsXML;
+        if (getExtensionsXML() != null) {
+            extensionsXML = getExtensionsXML().toString();
+        } else {
+            extensionsXML = null;
+        }
 
         if ((contentList.size() == 0)
                 && (reason == null)

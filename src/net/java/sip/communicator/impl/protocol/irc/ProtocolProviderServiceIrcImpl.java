@@ -6,6 +6,8 @@
  */
 package net.java.sip.communicator.impl.protocol.irc;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import net.java.sip.communicator.service.protocol.*;
 import net.java.sip.communicator.service.protocol.event.*;
 import net.java.sip.communicator.util.*;
@@ -265,9 +267,10 @@ public class ProtocolProviderServiceIrcImpl
      * @throws OperationFailedException with the corresponding code it the
      *   registration fails for some reason (e.g. a networking error or an
      *   implementation problem).
+     * @throws NotConnectedException 
      */
     public void unregister()
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         for (ChatRoom joinedChatRoom
                 : multiUserChat.getCurrentlyJoinedChatRooms())

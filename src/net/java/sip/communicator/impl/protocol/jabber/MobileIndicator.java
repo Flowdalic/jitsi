@@ -6,9 +6,9 @@
  */
 package net.java.sip.communicator.impl.protocol.jabber;
 
-import net.java.sip.communicator.impl.protocol.jabber.extensions.caps.*;
 import net.java.sip.communicator.service.protocol.*;
 import net.java.sip.communicator.service.protocol.event.*;
+
 import org.jivesoftware.smack.util.*;
 
 import java.util.*;
@@ -25,9 +25,7 @@ import java.util.*;
  * @author Damian Minkov
  */
 public class MobileIndicator
-    implements RegistrationStateChangeListener,
-               UserCapsNodeListener
-{
+    implements RegistrationStateChangeListener {
     /**
      * The parent provider.
      */
@@ -173,63 +171,11 @@ public class MobileIndicator
      */
     boolean isMobileResource(String resourceName, String fullJid)
     {
-        if(isCapsMobileIndicator)
-        {
-            EntityCapsManager capsManager  = ssclCallback.getParentProvider()
-                .getDiscoveryManager().getCapsManager();
-
-            EntityCapsManager.Caps caps = capsManager.getCapsByUser(fullJid);
-
-            if(caps != null && containsStrings(caps.node, checkStrings))
-                return true;
-            else
-                return false;
-        }
-
+        // TODO Smack 4
         if(startsWithStrings(resourceName, checkStrings))
             return true;
         else
             return false;
-    }
-
-    /**
-     * The method is called by a ProtocolProvider implementation whenever
-     * a change in the registration state of the corresponding provider had
-     * occurred.
-     * @param evt ProviderStatusChangeEvent the event describing the status
-     * change.
-     */
-    public void registrationStateChanged(RegistrationStateChangeEvent evt)
-    {
-        if(evt.getNewState() == RegistrationState.REGISTERED)
-        {
-            this.parentProvider.getDiscoveryManager()
-                    .getCapsManager().addUserCapsNodeListener(this);
-        }
-    }
-
-    /**
-     * Caps for user has been changed.
-     * @param user the user (full JID)
-     * @param node the entity caps node#ver
-     * @param online indicates if the user for which we're notified is online
-     */
-    @Override
-    public void userCapsNodeAdded(String user, String node, boolean online)
-    {
-        updateMobileIndicatorUsingCaps(user);
-    }
-
-    /**
-     * Caps for user has been changed.
-     * @param user the user (full JID)
-     * @param node the entity caps node#ver
-     * @param online indicates if the user for which we're notified is online
-     */
-    @Override
-    public void userCapsNodeRemoved(String user, String node, boolean online)
-    {
-        updateMobileIndicatorUsingCaps(user);
     }
 
     /**
@@ -335,5 +281,12 @@ public class MobileIndicator
         }
 
         return false;
+    }
+
+    @Override
+    public void registrationStateChanged(RegistrationStateChangeEvent evt)
+    {
+        // TODO Auto-generated method stub
+        
     }
 }

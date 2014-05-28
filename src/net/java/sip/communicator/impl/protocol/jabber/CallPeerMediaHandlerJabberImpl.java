@@ -24,7 +24,8 @@ import org.jitsi.service.libjitsi.*;
 import org.jitsi.service.neomedia.*;
 import org.jitsi.service.neomedia.device.*;
 import org.jitsi.service.neomedia.format.*;
-import org.jivesoftware.smackx.packet.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 
 /**
  * An XMPP specific extension of the generic media handler.
@@ -367,9 +368,10 @@ public class CallPeerMediaHandlerJabberImpl
      *
      * @throws OperationFailedException if we fail to create the descriptions
      * for reasons like problems with device interaction, allocating ports, etc.
+     * @throws NotConnectedException 
      */
     public List<ContentPacketExtension> createContentList()
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         // Describe the media.
         List<ContentPacketExtension> mediaDescs
@@ -482,9 +484,10 @@ public class CallPeerMediaHandlerJabberImpl
      * @throws OperationFailedException if we fail to create the descriptions
      * for reasons like - problems with device interaction, allocating ports,
      * etc.
+     * @throws NotConnectedException 
      */
     public List<ContentPacketExtension> createContentList(MediaType mediaType)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         MediaDevice dev = getDefaultDevice(mediaType);
         List<ContentPacketExtension> mediaDescs
@@ -540,9 +543,10 @@ public class CallPeerMediaHandlerJabberImpl
      * the call peer could use to send a <tt>session-accept</tt>.
      *
      * @throws OperationFailedException if we fail to configure the media stream
+     * @throws NotConnectedException 
      */
     public Iterable<ContentPacketExtension> generateSessionAccept()
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         TransportManagerJabberImpl transportManager = getTransportManager();
         Iterable<ContentPacketExtension> sessAccept
@@ -1144,12 +1148,13 @@ public class CallPeerMediaHandlerJabberImpl
      * {@link TransportManagerJabberImpl#wrapupCandidateHarvest()}
      * @throws OperationFailedException if anything goes wrong while starting or
      * wrapping up the gathering of local candidate addresses
+     * @throws NotConnectedException 
      */
     private List<ContentPacketExtension> harvestCandidates(
             List<ContentPacketExtension> remote,
             List<ContentPacketExtension> local,
             TransportInfoSender transportInfoSender)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         long startCandidateHarvestTime = System.currentTimeMillis();
         TransportManagerJabberImpl transportManager = getTransportManager();
@@ -1319,10 +1324,11 @@ public class CallPeerMediaHandlerJabberImpl
      * initializing, configuring and starting streams and anybody interested
      * in this operation can synchronize to the mediaHandler instance to wait
      * processing to stop (method setState in CallPeer).
+     * @throws NotConnectedException 
      */
     public void processAnswer(List<ContentPacketExtension> answer)
         throws OperationFailedException,
-               IllegalArgumentException
+               IllegalArgumentException, NotConnectedException
     {
         /*
          * The answer given in session-accept may contain transport-related
@@ -1458,13 +1464,14 @@ public class CallPeerMediaHandlerJabberImpl
      * initializing, configuring and starting streams and anybody interested
      * in this operation can synchronize to the mediaHandler instance to wait
      * processing to stop (method setState in CallPeer).
+     * @throws NotConnectedException 
      */
     private void processContent(
             ContentPacketExtension content,
             boolean modify,
             boolean masterStream)
         throws OperationFailedException,
-               IllegalArgumentException
+               IllegalArgumentException, NotConnectedException
     {
         RtpDescriptionPacketExtension description
             = JingleUtils.getRtpDescription(content);
@@ -1649,10 +1656,11 @@ public class CallPeerMediaHandlerJabberImpl
      * initialize a stream ...).
      * @throws IllegalArgumentException if there's a problem with
      * <tt>offer</tt>'s format or semantics.
+     * @throws NotConnectedException 
      */
     public void processOffer(List<ContentPacketExtension> offer)
         throws OperationFailedException,
-               IllegalArgumentException
+               IllegalArgumentException, NotConnectedException
     {
         // prepare to generate answers to all the incoming descriptions
         List<ContentPacketExtension> answer
@@ -1812,7 +1820,7 @@ public class CallPeerMediaHandlerJabberImpl
                 new TransportInfoSender()
                         {
                             public void sendTransportInfo(
-                                    Iterable<ContentPacketExtension> contents)
+                                    Iterable<ContentPacketExtension> contents) throws NotConnectedException
                             {
                                 getPeer().sendTransportInfo(contents);
                             }
@@ -1864,10 +1872,11 @@ public class CallPeerMediaHandlerJabberImpl
      * initializing, configuring and starting streams and anybody interested
      * in this operation can synchronize to the mediaHandler instance to wait
      * processing to stop (method setState in CallPeer).
+     * @throws NotConnectedException 
      */
     public void reinitAllContents()
         throws OperationFailedException,
-               IllegalArgumentException
+               IllegalArgumentException, NotConnectedException
     {
         boolean masterStreamSet = false;
         for(String key : remoteContentMap.keySet())
@@ -1917,13 +1926,14 @@ public class CallPeerMediaHandlerJabberImpl
      * initializing, configuring and starting streams and anybody interested
      * in this operation can synchronize to the mediaHandler instance to wait
      * processing to stop (method setState in CallPeer).
+     * @throws NotConnectedException 
      */
     public void reinitContent(
             String name,
             ContentPacketExtension content,
             boolean modify)
         throws OperationFailedException,
-               IllegalArgumentException
+               IllegalArgumentException, NotConnectedException
     {
         ContentPacketExtension ext = remoteContentMap.get(name);
 
@@ -1951,10 +1961,12 @@ public class CallPeerMediaHandlerJabberImpl
      * @param contentMap the <tt>Map</tt> in which the specified <tt>name</tt>
      * has an association with the media content to be removed
      * @param name the name of the media content to be removed from this session
+     * @throws IllegalArgumentException 
+     * @throws NotConnectedException 
      */
     private void removeContent(
             Map<String, ContentPacketExtension> contentMap,
-            String name)
+            String name) throws NotConnectedException, IllegalArgumentException
     {
         ContentPacketExtension content = contentMap.remove(name);
 
@@ -1993,8 +2005,9 @@ public class CallPeerMediaHandlerJabberImpl
      *
      * @param onHold <tt>true</tt> if the remote party has put us on hold
      * and <tt>false</tt> if they've just put us off hold.
+     * @throws NotConnectedException 
      */
-    public void setRemotelyOnHold(boolean onHold)
+    public void setRemotelyOnHold(boolean onHold) throws NotConnectedException
     {
         this.remotelyOnHold = onHold;
 
@@ -2128,10 +2141,11 @@ public class CallPeerMediaHandlerJabberImpl
      *
      * @throws IllegalStateException if no offer or answer has been provided or
      * generated earlier
+     * @throws NotConnectedException 
      */
     @Override
     public void start()
-        throws IllegalStateException
+        throws IllegalStateException, NotConnectedException
     {
         try
         {
@@ -2182,9 +2196,10 @@ public class CallPeerMediaHandlerJabberImpl
      * @throws OperationFailedException if anything goes wrong while setting the
      * <tt>connector</tt>s and/or <tt>target</tt>s of the <tt>MediaStream</tt>s
      * managed by this <tt>CallPeerMediaHandler</tt>
+     * @throws NotConnectedException 
      */
     private void wrapupConnectivityEstablishment()
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         TransportManagerJabberImpl transportManager = getTransportManager();
 
@@ -2254,9 +2269,10 @@ public class CallPeerMediaHandlerJabberImpl
      *
      * @param locallyOnHold <tt>true</tt> if we are to make our streams
      * stop transmitting and <tt>false</tt> if we are to start transmitting
+     * @throws NotConnectedException 
      */
     @Override
-    public void setLocallyOnHold(boolean locallyOnHold)
+    public void setLocallyOnHold(boolean locallyOnHold) throws NotConnectedException
     {
         CallPeerJabberImpl peer = getPeer();
 

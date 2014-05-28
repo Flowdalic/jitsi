@@ -16,9 +16,11 @@ import net.java.sip.communicator.util.*;
 
 import org.apache.commons.lang3.*;
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NoResponseException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.*;
-import org.jivesoftware.smackx.packet.*;
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 /**
  * Handles and retrieves all info of our contacts or our account info
@@ -150,7 +152,7 @@ public class InfoRetreiver
             // if there is no value or is equals to the default one
             // load vcard using smack load method
             if(vcardTimeoutReply == -1
-               || vcardTimeoutReply == SmackConfiguration.getPacketReplyTimeout())
+               || vcardTimeoutReply == connection.getPacketReplyTimeout())
                 card.load(connection, contactAddress);
             else
                 load(card, connection, contactAddress, vcardTimeoutReply);
@@ -385,7 +387,7 @@ public class InfoRetreiver
      */
     String checkForFullName(VCard card)
     {
-        String vcardXml = card.toXML();
+        String vcardXml = card.toXML().toString();
 
         int indexOpen = vcardXml.indexOf(TAG_FN_OPEN);
 
@@ -410,12 +412,14 @@ public class InfoRetreiver
      * @param user the user
      * @param timeout timeout in second
      * @throws XMPPException if something went wrong during VCard loading
+     * @throws NoResponseException 
+     * @throws NotConnectedException 
      */
     public void load(VCard vcard,
                      XMPPConnection connection,
                      String user,
                      long timeout)
-        throws XMPPException
+        throws XMPPException, NoResponseException, NotConnectedException
     {
         vcard.setTo(user);
 
@@ -427,19 +431,8 @@ public class InfoRetreiver
         VCard result = null;
         try
         {
-            result = (VCard) collector.nextResult(timeout);
+            result = (VCard) collector.nextResultOrThrow(timeout);
 
-            if (result == null)
-            {
-                String errorMessage = "Timeout getting VCard information";
-                throw new XMPPException(errorMessage, new XMPPError(
-                        XMPPError.Condition.request_timeout, errorMessage));
-            }
-
-            if (result.getError() != null)
-            {
-                throw new XMPPException(result.getError());
-            }
         }
         catch (ClassCastException e)
         {

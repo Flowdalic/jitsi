@@ -12,6 +12,8 @@ import java.util.*;
 
 import javax.swing.*;
 
+import org.jivesoftware.smack.SmackException;
+
 import net.java.sip.communicator.impl.gui.*;
 import net.java.sip.communicator.impl.gui.main.chat.*;
 import net.java.sip.communicator.service.protocol.*;
@@ -337,7 +339,7 @@ public class ReceiveFileConversationComponent
         }
 
         @Override
-        public Object construct()
+        public Object construct() throws SmackException
         {
             fileTransfer = fileTransferRequest.acceptFile(downloadFile);
 

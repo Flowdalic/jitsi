@@ -17,11 +17,12 @@ import net.java.sip.communicator.util.*;
 
 import org.jitsi.util.xml.*;
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.util.*;
-import org.jivesoftware.smackx.packet.*;
+import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 
 /**
  * Implements <tt>OperationSetTelephonyConferencing</tt> for Jabber.
@@ -85,9 +86,10 @@ public class OperationSetTelephonyConferencingJabberImpl
      *
      * @param call the <tt>Call</tt> whose <tt>CallPeer</tt>s are to be notified
      * about changes in the telephony conference-related information
+     * @throws NotConnectedException 
      */
     @Override
-    protected void notifyCallPeers(Call call)
+    protected void notifyCallPeers(Call call) throws NotConnectedException
     {
         if (call.isConferenceFocus())
         {
@@ -108,8 +110,9 @@ public class OperationSetTelephonyConferencingJabberImpl
      * conference-related information.
      *
      * @param callPeer the <tt>CallPeer</tt> to notify.
+     * @throws NotConnectedException 
      */
-    private void notify(CallPeer callPeer)
+    private void notify(CallPeer callPeer) throws NotConnectedException
     {
         if(!(callPeer instanceof CallPeerJabberImpl))
             return;

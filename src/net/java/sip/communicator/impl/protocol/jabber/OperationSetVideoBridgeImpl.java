@@ -15,6 +15,7 @@ import net.java.sip.communicator.service.protocol.media.*;
 import net.java.sip.communicator.util.*;
 
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.*;
 
@@ -207,8 +208,9 @@ public class OperationSetVideoBridgeImpl
      *
      * @param packet the <tt>Packet</tt> which has been received and which this
      * instance is given a chance to process
+     * @throws NotConnectedException 
      */
-    public void processPacket(Packet packet)
+    public void processPacket(Packet packet) throws NotConnectedException
     {
         /*
          * As we do elsewhere, acknowledge the receipt of the Packet first and

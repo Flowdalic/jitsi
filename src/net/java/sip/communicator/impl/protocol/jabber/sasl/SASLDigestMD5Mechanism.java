@@ -13,6 +13,7 @@ import javax.security.auth.callback.*;
 import javax.security.sasl.*;
 
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.util.*;
 
 /**
@@ -87,10 +88,11 @@ public class SASLDigestMD5Mechanism
      *
      * @param challenge a base64 encoded string representing the challenge.
      * @throws IOException if an exception sending the response occurs.
+     * @throws NotConnectedException 
      */
     @Override
     public void challengeReceived(String challenge)
-        throws IOException
+        throws IOException, NotConnectedException
     {
         byte response[];
         if(challenge != null) {

@@ -20,10 +20,16 @@ import net.java.sip.communicator.util.*;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.*;
+import org.jivesoftware.smack.packet.XMPPError.Condition;
 import org.jivesoftware.smack.provider.*;
 import org.jivesoftware.smack.util.*;
 import org.jivesoftware.smackx.*;
+import org.jivesoftware.smackx.delay.packet.DelayInfo;
+import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.packet.*;
+import org.jivesoftware.smackx.xevent.MessageEventManager;
+import org.jivesoftware.smackx.xhtmlim.XHTMLManager;
+import org.jivesoftware.smackx.xhtmlim.packet.XHTMLExtension;
 
 /**
  * A straightforward implementation of the basic instant messaging operation
@@ -152,10 +158,9 @@ public class OperationSetBasicInstantMessagingJabberImpl
         provider.addRegistrationStateChangeListener(
                         new RegistrationStateListener());
 
-        ProviderManager man = ProviderManager.getInstance();
         MessageCorrectionExtensionProvider extProvider =
                 new MessageCorrectionExtensionProvider();
-        man.addExtensionProvider(MessageCorrectionExtension.ELEMENT_NAME,
+        ProviderManager.addExtensionProvider(MessageCorrectionExtension.ELEMENT_NAME,
                 MessageCorrectionExtension.NAMESPACE,
                 extProvider);
     }
@@ -326,7 +331,7 @@ public class OperationSetBasicInstantMessagingJabberImpl
             };
 
         //we don't have a thread for this chat, so let's create one.
-        Chat chat = jabberConnection.getChatManager()
+        Chat chat = ChatManager.getInstanceFor(jabberConnection)
                 .createChat(jid, msgListener);
 
         return chat;
@@ -752,9 +757,7 @@ public class OperationSetBasicInstantMessagingJabberImpl
             iq.setFrom(jabberProvider.getOurJID());
             iq.setType(IQ.Type.SET);
             jabberProvider.getConnection().sendPacket(iq);
-            response
-                = packetCollector.nextResult(
-                        SmackConfiguration.getPacketReplyTimeout());
+            response = packetCollector.nextResult();
 
             packetCollector.cancel();
         }
@@ -897,11 +900,10 @@ public class OperationSetBasicInstantMessagingJabberImpl
                     = (XHTMLExtension)ext;
 
                 //parse all bodies
-                Iterator<String> bodies = xhtmlExt.getBodies();
+                List<String> bodies = xhtmlExt.getBodies();
                 StringBuffer messageBuff = new StringBuffer();
-                while (bodies.hasNext())
+                for (String body : bodies)
                 {
-                    String body = bodies.next();
                     messageBuff.append(body);
                 }
 
@@ -955,7 +957,8 @@ public class OperationSetBasicInstantMessagingJabberImpl
                         int errorResultCode
                             = ChatRoomMessageDeliveryFailedEvent.UNKNOWN_ERROR;
 
-                        if(error != null && error.getCode() == 403)
+                        // TODO Smack 4 403 correct mapping?
+                        if(error != null && error.getCondition().equals(Condition.forbidden))
                         {
                             errorResultCode
                                 = ChatRoomMessageDeliveryFailedEvent.FORBIDDEN;
@@ -981,13 +984,14 @@ public class OperationSetBasicInstantMessagingJabberImpl
                 if (logger.isInfoEnabled())
                     logger.info("Message error received from " + userBareID);
 
-                int errorCode = packet.getError().getCode();
+                String errorCode = packet.getError().getCondition();
                 int errorResultCode = MessageDeliveryFailedEvent.UNKNOWN_ERROR;
 
-                if(errorCode == 503)
+                // TOOD Smack 4 correct mapping
+                if(errorCode.equals(Condition.feature_not_implemented))
                 {
-                    org.jivesoftware.smackx.packet.MessageEvent msgEvent =
-                        (org.jivesoftware.smackx.packet.MessageEvent)
+                    org.jivesoftware.smackx.xevent.packet.MessageEvent msgEvent =
+                        (org.jivesoftware.smackx.xevent.packet.MessageEvent)
                             packet.getExtension("x", "jabber:x:event");
                     if(msgEvent != null && msgEvent.isOffline())
                     {
@@ -1023,7 +1027,7 @@ public class OperationSetBasicInstantMessagingJabberImpl
             }
 
             Chat chat =
-                jabberProvider.getConnection().getChatManager()
+                ChatManager.getInstanceFor(jabberProvider.getConnection())
                     .getThreadChat(msg.getThread());
             putJidForAddress(address, userFullId, chat);
 
@@ -1137,13 +1141,11 @@ public class OperationSetBasicInstantMessagingJabberImpl
                         +" seems to provide a Gmail notification "
                         +" service so we will try to subscribe for it");
 
-        ProviderManager providerManager = ProviderManager.getInstance();
-
-        providerManager.addIQProvider(
+        ProviderManager.addIQProvider(
                 MailboxIQ.ELEMENT_NAME,
                 MailboxIQ.NAMESPACE,
                 new MailboxIQProvider());
-        providerManager.addIQProvider(
+        ProviderManager.addIQProvider(
                 NewMailNotificationIQ.ELEMENT_NAME,
                 NewMailNotificationIQ.NAMESPACE,
                 new NewMailNotificationProvider());

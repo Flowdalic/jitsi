@@ -8,10 +8,11 @@ package net.java.sip.communicator.impl.protocol.jabber.extensions.usersearch;
 
 import java.util.*;
 
-import org.jivesoftware.smack.packet.*;
-import org.jivesoftware.smack.util.*;
-import org.jivesoftware.smackx.*;
-import org.jivesoftware.smackx.packet.*;
+import org.jivesoftware.smack.packet.IQ;
+import org.jivesoftware.smack.util.StringUtils;
+import org.jivesoftware.smackx.search.ReportedData;
+import org.jivesoftware.smackx.xdata.Form;
+import org.jivesoftware.smackx.xdata.packet.DataForm;
 
 /**
  * Implements the <tt>IQ</tt> packets for user search (XEP-0055)

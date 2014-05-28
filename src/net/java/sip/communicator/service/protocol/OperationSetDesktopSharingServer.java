@@ -8,6 +8,8 @@ package net.java.sip.communicator.service.protocol;
 
 import java.awt.event.*;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 /**
  * Represents an <tt>OperationSet</tt> giving access to desktop sharing
  * server-side specific functionalities.
@@ -22,16 +24,18 @@ public interface OperationSetDesktopSharingServer
      * keyboard and mouse events received from peer.
      *
      * @param callPeer call peer that will take control on local computer
+     * @throws NotConnectedException 
      */
-    public void enableRemoteControl(CallPeer callPeer);
+    public void enableRemoteControl(CallPeer callPeer) throws NotConnectedException;
 
     /**
      * Disables desktop remote control. Local desktop stop regenerates
      * keyboard and mouse events received from peer.
      *
      * @param callPeer call peer that will stop controlling local computer
+     * @throws NotConnectedException 
      */
-    public void disableRemoteControl(CallPeer callPeer);
+    public void disableRemoteControl(CallPeer callPeer) throws NotConnectedException;
 
     /**
      * Process keyboard notification received from remote peer.

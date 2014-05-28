@@ -13,9 +13,11 @@ import org.jitsi.util.Logger;
 import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smack.provider.*;
 import org.jivesoftware.smack.util.*;
-import org.jivesoftware.smackx.packet.*;
-import org.jivesoftware.smackx.packet.StreamInitiation.File;
-import org.jivesoftware.smackx.provider.*;
+import org.jivesoftware.smackx.delay.packet.DelayInformation;
+import org.jivesoftware.smackx.si.packet.StreamInitiation;
+import org.jivesoftware.smackx.si.packet.StreamInitiation.File;
+import org.jivesoftware.smackx.xdata.packet.DataForm;
+import org.jivesoftware.smackx.xdata.provider.DataFormProvider;
 import org.xmlpull.v1.*;
 
 /**
@@ -129,7 +131,7 @@ public class FileElement
         if (getDate() != null)
         {
             buffer.append("date=\"").append(
-                StringUtils.formatXEP0082Date(this.getDate())).append("\" ");
+                XmppDateTime.formatXEP0082Date(this.getDate())).append("\" ");
         }
 
         if (getHash() != null)
@@ -328,7 +330,7 @@ public class FileElement
             }
         }
 
-        initiation.setSesssionID(id);
+        initiation.setSessionID(id);
         initiation.setMimeType(mimeType);
         initiation.setFeatureNegotiationForm(form);
 

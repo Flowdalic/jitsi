@@ -575,8 +575,8 @@ public class SdpUtils
             sessDescr.setTimeDescriptions(timeDescs);
 
             String addrType = localAddress instanceof Inet6Address
-                ? XMPPConnection.IP6
-                : XMPPConnection.IP4;
+                ? Connection.IP6
+                : Connection.IP4;
 
             //o
             if (StringUtils.isNullOrEmpty(userName) )
@@ -590,7 +590,7 @@ public class SdpUtils
             sessDescr.setOrigin(o);
 
             //c=
-            XMPPConnection c = sdpFactory.createConnection(
+            Connection c = sdpFactory.createConnection(
                 "IN", addrType, localAddress.getHostAddress());
 
             sessDescr.setConnection(c);
@@ -877,7 +877,7 @@ public class SdpUtils
         throws IllegalArgumentException
     {
         //first check if there's a "c=" field in the media description
-        XMPPConnection conn = mediaDesc.getConnection();
+        Connection conn = mediaDesc.getConnection();
 
         if ( conn == null)
         {

@@ -9,6 +9,7 @@ package net.java.sip.communicator.impl.protocol.jabber;
 import net.java.sip.communicator.service.protocol.*;
 
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.packet.*;
 
 /**
@@ -50,10 +51,11 @@ public class OperationSetExtendedAuthorizationsJabberImpl
      * @param contact the <tt>Contact</tt> whom we're granting authorization
      * prior to receiving a request.
      * @throws OperationFailedException if we fail sending the authorization.
+     * @throws NotConnectedException 
      */
     public void explicitAuthorize(Contact contact)
         throws
-        OperationFailedException
+        OperationFailedException, NotConnectedException
     {
         opSetPersPresence.assertConnected();
 

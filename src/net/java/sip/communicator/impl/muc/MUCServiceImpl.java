@@ -9,6 +9,8 @@ package net.java.sip.communicator.impl.muc;
 import java.util.*;
 
 import org.jitsi.service.resources.*;
+import org.jivesoftware.smack.SmackException.NoResponseException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 
 import net.java.sip.communicator.plugin.desktoputil.*;
 import net.java.sip.communicator.plugin.desktoputil.chat.*;
@@ -447,6 +449,17 @@ public class MUCServiceImpl
                     new String[]{protocolProvider.getProtocolDisplayName()}),
                     ex);
         }
+        catch (NotConnectedException ex)
+        {
+            logger.error("Failed to create chat room.", ex);
+
+            MUCActivator.getAlertUIService().showAlertDialog(
+                MUCActivator.getResources().getI18NString("service.gui.ERROR"),
+                MUCActivator.getResources().getI18NString(
+                    "service.gui.CREATE_CHAT_ROOM_ERROR",
+                    new String[]{protocolProvider.getProtocolDisplayName()}),
+                    ex);
+        }
 
         if(chatRoom != null)
         {
@@ -534,6 +547,18 @@ public class MUCServiceImpl
                 logger.trace("Failed to obtain existing chat rooms for server: "
                 + protocolProvider.getAccountID().getService(), e);
         }
+        catch (NoResponseException e)
+        {
+            if (logger.isTraceEnabled())
+                logger.trace("Failed to obtain existing chat rooms for server: "
+                + protocolProvider.getAccountID().getService(), e);
+        }
+        catch (NotConnectedException e)
+        {
+            if (logger.isTraceEnabled())
+                logger.trace("Failed to obtain existing chat rooms for server: "
+                + protocolProvider.getAccountID().getService(), e);
+        }
 
         return chatRooms;
     }
@@ -545,10 +570,12 @@ public class MUCServiceImpl
      * invitation
      * @param invitation the invitation to reject
      * @param reason the reason for the rejection
+     * @throws NotConnectedException 
      */
+    @Override
     public void rejectInvitation(  OperationSetMultiUserChat multiUserChatOpSet,
                                    ChatRoomInvitation invitation,
-                                   String reason)
+                                   String reason) throws NotConnectedException
     {
         multiUserChatOpSet.rejectInvitation(invitation, reason);
     }
@@ -558,8 +585,9 @@ public class MUCServiceImpl
      *
      * @param chatRoomWrapper the chat room to leave.
      * @return <tt>ChatRoomWrapper</tt> instance associated with the chat room.
+     * @throws NotConnectedException 
      */
-    public ChatRoomWrapper leaveChatRoom(ChatRoomWrapper chatRoomWrapper)
+    public ChatRoomWrapper leaveChatRoom(ChatRoomWrapper chatRoomWrapper) throws NotConnectedException
     {
         ChatRoom chatRoom = chatRoomWrapper.getChatRoom();
 
@@ -941,9 +969,11 @@ public class MUCServiceImpl
      * @param chatRoomWrapper the <tt>ChatRoomWrapper</tt> to be destroyed.
      * @param reason the reason for destroying.
      * @param alternateAddress the alternate address.
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
     public void destroyChatRoom(ChatRoomWrapper chatRoomWrapper,
-        String reason, String alternateAddress)
+        String reason, String alternateAddress) throws NoResponseException, NotConnectedException
     {
         if(chatRoomWrapper.getChatRoom().destroy(reason, alternateAddress))
         {

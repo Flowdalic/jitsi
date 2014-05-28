@@ -13,7 +13,7 @@ import net.java.sip.communicator.util.*;
 
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.*;
-import org.jivesoftware.smackx.packet.*;
+import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 
 /**
  * An implementation of the <tt>CallPeer</tt> abstract class for the common part
@@ -163,9 +163,9 @@ public abstract class AbstractCallPeerJabberGTalkImpl
             if(discoveryInfo != null)
                 setDiscoveryInfo(discoveryInfo);
         }
-        catch (XMPPException xmppex)
+        catch (Exception e) // TODO Smack 4
         {
-            logger.warn("Could not retrieve info for " + calleeURI, xmppex);
+            logger.warn("Could not retrieve info for " + calleeURI, e);
         }
     }
 

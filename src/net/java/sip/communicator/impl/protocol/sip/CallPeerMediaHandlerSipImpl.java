@@ -21,6 +21,7 @@ import org.jitsi.service.configuration.*;
 import org.jitsi.service.neomedia.*;
 import org.jitsi.service.neomedia.device.*;
 import org.jitsi.service.neomedia.format.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 
 import ch.imvs.sdes4j.srtp.*;
 
@@ -118,9 +119,10 @@ public class CallPeerMediaHandlerSipImpl
      *
      * @throws OperationFailedException if creating the SDP fails for some
      * reason.
+     * @throws NotConnectedException 
      */
     public String createOffer()
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         SessionDescription offer
             = (localSess == null)
@@ -147,9 +149,10 @@ public class CallPeerMediaHandlerSipImpl
      *
      * @throws OperationFailedException if generating the SDP fails for whatever
      * reason.
+     * @throws NotConnectedException 
      */
     private SessionDescription createFirstOffer()
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         //Audio Media Description
         Vector<MediaDescription> mediaDescs = createMediaDescriptions();
@@ -184,9 +187,10 @@ public class CallPeerMediaHandlerSipImpl
      * @throws OperationFailedException if we fail to create the descriptions
      * for reasons like - problems with device interaction, allocating ports,
      * etc.
+     * @throws NotConnectedException 
      */
     private Vector<MediaDescription> createMediaDescriptions()
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         //Audio Media Description
         Vector<MediaDescription> mediaDescs = new Vector<MediaDescription>();
@@ -342,10 +346,11 @@ public class CallPeerMediaHandlerSipImpl
      *
      * @throws OperationFailedException in case creating the new description
      * fails for some reason.
+     * @throws NotConnectedException 
      */
     private SessionDescription createUpdateOffer(
                                         SessionDescription sdescToUpdate)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
 
     {
         //create the media descriptions reflecting our current state.
@@ -377,10 +382,11 @@ public class CallPeerMediaHandlerSipImpl
      * response.
      * @throws IllegalArgumentException if there's a problem with the format
      * or semantics of the <tt>offerString</tt>.
+     * @throws NotConnectedException 
      */
     public String processOffer(String offerString)
         throws OperationFailedException,
-               IllegalArgumentException
+               IllegalArgumentException, NotConnectedException
     {
         SessionDescription offer = SdpUtils.parseSdpString(offerString);
 
@@ -418,10 +424,11 @@ public class CallPeerMediaHandlerSipImpl
      * initialize a stream ...).
      * @throws IllegalArgumentException if there's a problem with
      * <tt>offer</tt>'s format or semantics.
+     * @throws NotConnectedException 
      */
     private SessionDescription processFirstOffer(SessionDescription offer)
         throws OperationFailedException,
-               IllegalArgumentException
+               IllegalArgumentException, NotConnectedException
     {
         Vector<MediaDescription> answerDescriptions
             = createMediaDescriptionsForAnswer(offer);
@@ -452,12 +459,13 @@ public class CallPeerMediaHandlerSipImpl
      * <tt>MediaStream</tt>s as suggested by <tt>newOffer</tt>
      * @throws IllegalArgumentException if there's a problem with the syntax
      * or semantics of <tt>newOffer</tt>.
+     * @throws NotConnectedException 
      */
     private SessionDescription processUpdateOffer(
                                            SessionDescription newOffer,
                                            SessionDescription previousAnswer)
         throws OperationFailedException,
-               IllegalArgumentException
+               IllegalArgumentException, NotConnectedException
     {
         Vector<MediaDescription> answerDescriptions
             = createMediaDescriptionsForAnswer(newOffer);
@@ -486,11 +494,12 @@ public class CallPeerMediaHandlerSipImpl
      * <tt>offer</tt>
      * @throws IllegalArgumentException if there's a problem with the syntax
      * or semantics of <tt>newOffer</tt>.
+     * @throws NotConnectedException 
      */
     private Vector<MediaDescription> createMediaDescriptionsForAnswer(
             SessionDescription offer)
         throws OperationFailedException,
-               IllegalArgumentException
+               IllegalArgumentException, NotConnectedException
     {
         List<MediaDescription> remoteDescriptions
             = SdpUtils.extractMediaDescriptions(offer);
@@ -1272,10 +1281,11 @@ public class CallPeerMediaHandlerSipImpl
      * initializing, configuring and starting streams and anybody interested
      * in this operation can synchronize to the mediaHandler instance to wait
      * processing to stop (method setState in CallPeer).
+     * @throws NotConnectedException 
      */
     private void processAnswer(SessionDescription answer)
         throws OperationFailedException,
-               IllegalArgumentException
+               IllegalArgumentException, NotConnectedException
     {
         synchronized (offerAnswerLock)
         {
@@ -1297,10 +1307,11 @@ public class CallPeerMediaHandlerSipImpl
      * initializing, configuring and starting streams and anybody interested
      * in this operation can synchronize to the mediaHandler instance to wait
      * processing to stop (method setState in CallPeer).
+     * @throws NotConnectedException 
      */
     private void doNonSynchronisedProcessAnswer(SessionDescription answer)
             throws OperationFailedException,
-                   IllegalArgumentException
+                   IllegalArgumentException, NotConnectedException
     {
         List<MediaDescription> remoteDescriptions
             = SdpUtils.extractMediaDescriptions(answer);
@@ -1780,10 +1791,11 @@ public class CallPeerMediaHandlerSipImpl
      * @throws IllegalStateException if this method is called without this
      * handler having first seen a media description or having generated an
      * offer.
+     * @throws NotConnectedException 
      */
     @Override
     public void start()
-        throws IllegalStateException
+        throws IllegalStateException, NotConnectedException
     {
         synchronized (offerAnswerLock)
         {

@@ -17,6 +17,7 @@ import net.java.sip.communicator.service.protocol.media.*;
 import net.java.sip.communicator.util.*;
 
 import org.jitsi.service.neomedia.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.packet.*;
 
 /**
@@ -174,9 +175,10 @@ public abstract class TransportManagerJabberImpl
      * which represents the transport-related information which has been
      * received from the remote peer and which is to be sent to the associated
      * Jitsi Videobridge
+     * @throws NotConnectedException 
      */
     protected void sendTransportInfoToJitsiVideobridge(
-            Map<String,IceUdpTransportPacketExtension> map)
+            Map<String,IceUdpTransportPacketExtension> map) throws NotConnectedException
     {
         CallPeerJabberImpl peer = getCallPeer();
         boolean initiator = !peer.isInitiator();
@@ -262,13 +264,14 @@ public abstract class TransportManagerJabberImpl
      * <tt>ourContent</tt>; otherwise, <tt>null</tt>
      * @throws OperationFailedException if anything goes wrong while starting
      * transport candidate harvest for the specified <tt>ourContent</tt>
+     * @throws NotConnectedException 
      */
     protected abstract PacketExtension startCandidateHarvest(
             ContentPacketExtension theirContent,
             ContentPacketExtension ourContent,
             TransportInfoSender transportInfoSender,
             String media)
-        throws OperationFailedException;
+        throws OperationFailedException, NotConnectedException;
 
     /**
      * Starts transport candidate harvest. This method should complete rapidly
@@ -293,12 +296,13 @@ public abstract class TransportManagerJabberImpl
      * {@link #wrapupCandidateHarvest()}.
      *
      * @throws OperationFailedException if we fail to allocate a port number.
+     * @throws NotConnectedException 
      */
     public void startCandidateHarvest(
             List<ContentPacketExtension> theirOffer,
             List<ContentPacketExtension> ourAnswer,
             TransportInfoSender transportInfoSender)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         CallPeerJabberImpl peer = getCallPeer();
         CallJabberImpl call = peer.getCall();
@@ -478,11 +482,12 @@ public abstract class TransportManagerJabberImpl
      * expected to not be included in the result of
      * {@link #wrapupCandidateHarvest()}.
      * @throws OperationFailedException if we fail to allocate a port number.
+     * @throws NotConnectedException 
      */
     public void startCandidateHarvest(
             List<ContentPacketExtension> ourOffer,
             TransportInfoSender transportInfoSender)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         startCandidateHarvest(
                 /* theirOffer */ null,
@@ -537,9 +542,11 @@ public abstract class TransportManagerJabberImpl
      * connectivity checks (e.g. raw UDP) should return <tt>true</tt>. The
      * default implementation does not perform connectivity checks and always
      * returns <tt>true</tt>.
+     * @throws IllegalArgumentException 
+     * @throws NotConnectedException 
      */
     public boolean startConnectivityEstablishment(
-            Iterable<ContentPacketExtension> remote)
+            Iterable<ContentPacketExtension> remote) throws NotConnectedException, IllegalArgumentException
     {
         return true;
     }
@@ -596,8 +603,10 @@ public abstract class TransportManagerJabberImpl
      * @param name the name of the content to be removed from the
      * transport-related part of the session represented by this
      * <tt>TransportManagerJabberImpl</tt>
+     * @throws IllegalArgumentException 
+     * @throws NotConnectedException 
      */
-    public abstract void removeContent(String name);
+    public abstract void removeContent(String name) throws NotConnectedException, IllegalArgumentException;
 
     /**
      * Removes a content with a specific name from a specific collection of
@@ -608,10 +617,12 @@ public abstract class TransportManagerJabberImpl
      * @param name the name of the content to remove
      * @return the removed <tt>ContentPacketExtension</tt> if any; otherwise,
      * <tt>null</tt>
+     * @throws IllegalArgumentException 
+     * @throws NotConnectedException 
      */
     protected ContentPacketExtension removeContent(
             Iterable<ContentPacketExtension> contents,
-            String name)
+            String name) throws NotConnectedException, IllegalArgumentException
     {
         for (Iterator<ContentPacketExtension> contentIter = contents.iterator();
                 contentIter.hasNext();)
@@ -730,11 +741,12 @@ public abstract class TransportManagerJabberImpl
      * @param mediaType the <tt>MediaType</tt> associated with the specified
      * <tt>streamConnector</tt>
      * @param streamConnector the <tt>StreamConnector</tt> to be closed
+     * @throws NotConnectedException 
      */
     @Override
     protected void closeStreamConnector(
             MediaType mediaType,
-            StreamConnector streamConnector)
+            StreamConnector streamConnector) throws NotConnectedException
     {
         try
         {

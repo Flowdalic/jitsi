@@ -9,6 +9,8 @@ package net.java.sip.communicator.impl.gui.main.chat.conference;
 import java.awt.event.*;
 import java.util.*;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import net.java.sip.communicator.impl.gui.*;
 import net.java.sip.communicator.impl.gui.main.chat.*;
 import net.java.sip.communicator.impl.gui.main.contactlist.contactsource.*;
@@ -49,7 +51,15 @@ public class ChatInviteDialog
         {
             public void actionPerformed(ActionEvent e)
             {
-                inviteContacts();
+                try
+                {
+                    inviteContacts();
+                }
+                catch (NotConnectedException e1)
+                {
+                    // TODO Smack 4
+                    return;
+                }
                 dispose();
             }
         });
@@ -121,8 +131,9 @@ public class ChatInviteDialog
 
     /**
      * Invites the contacts to the chat conference.
+     * @throws NotConnectedException 
      */
-    private void inviteContacts()
+    private void inviteContacts() throws NotConnectedException
     {
         Collection<String> selectedContactAddresses = new ArrayList<String>();
 

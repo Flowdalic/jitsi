@@ -14,8 +14,12 @@ import net.java.sip.communicator.service.protocol.jabberconstants.*;
 import net.java.sip.communicator.util.*;
 
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.*;
+import org.jivesoftware.smackx.chatstates.ChatState;
+import org.jivesoftware.smackx.chatstates.ChatStateManager;
+import org.jivesoftware.smackx.xevent.MessageEventManager;
 
 /**
  * Maps SIP Communicator typing notifications to those going and coming from
@@ -91,9 +95,10 @@ public class OperationSetTypingNotificationsJabberImpl
      * not registered and initialized.
      * @throws java.lang.IllegalArgumentException if <tt>notifiedContact</tt> is
      * not an instance belonging to the underlying implementation.
+     * @throws NotConnectedException 
      */
     public void sendTypingNotification(Contact notifiedContact, int typingState)
-        throws IllegalStateException, IllegalArgumentException
+        throws IllegalStateException, IllegalArgumentException, NotConnectedException
     {
         assertConnected();
 
@@ -141,8 +146,9 @@ public class OperationSetTypingNotificationsJabberImpl
      *
      * @param contact the contact that we'd like to send our state to.
      * @param state the state we'd like to sent.
+     * @throws NotConnectedException 
      */
-    private void sendXep85ChatState(Contact contact, int state)
+    private void sendXep85ChatState(Contact contact, int state) throws NotConnectedException
     {
         if(opSetBasicIM == null
             || parentProvider.getConnection() == null)
@@ -171,8 +177,8 @@ public class OperationSetTypingNotificationsJabberImpl
         if(ta != null && ta.chat != null)
             chat = ta.chat;
         else
-            chat = parentProvider.getConnection()
-                .getChatManager().createChat(toJID, null);
+            chat = ChatManager.getInstanceFor(parentProvider.getConnection())
+                .createChat(toJID, null);
 
         ChatState chatState = null;
 

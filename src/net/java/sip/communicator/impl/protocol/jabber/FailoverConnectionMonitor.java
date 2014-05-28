@@ -13,6 +13,7 @@ import net.java.sip.communicator.service.protocol.event.*;
 import net.java.sip.communicator.util.*;
 
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 
 /**
  * When provider registers, check whether we are connected
@@ -252,7 +253,7 @@ public class FailoverConnectionMonitor
                                 srv.getPort());
 
                 confConn.setReconnectionAllowed(false);
-                XMPPConnection connection = new XMPPConnection(confConn);
+                XMPPConnection connection = new XMPPTCPConnection(confConn);
                 connection.connect();
 
                 connection.disconnect();

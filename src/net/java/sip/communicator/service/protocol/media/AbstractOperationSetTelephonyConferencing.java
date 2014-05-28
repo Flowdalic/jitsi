@@ -15,6 +15,7 @@ import net.java.sip.communicator.util.*;
 
 import org.jitsi.service.neomedia.*;
 import org.jitsi.util.xml.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.w3c.dom.*;
 
 /**
@@ -628,8 +629,9 @@ public abstract class AbstractOperationSetTelephonyConferencing<
      *
      * @param call the <tt>Call</tt> whose <tt>CallPeer</tt>s are to be notified
      * about changes in the telephony conference-related information
+     * @throws NotConnectedException 
      */
-    protected abstract void notifyCallPeers(Call call);
+    protected abstract void notifyCallPeers(Call call) throws NotConnectedException;
 
     /**
      * Notifies this <tt>CallListener</tt> that a specific outgoing

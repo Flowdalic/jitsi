@@ -41,8 +41,13 @@ import org.jitsi.util.*;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smack.provider.*;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.*;
+import org.jivesoftware.smackx.disco.ServiceDiscoveryManager;
+import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
+import org.jivesoftware.smackx.disco.packet.DiscoverItems;
+import org.jivesoftware.smackx.nick.packet.Nick;
 import org.jivesoftware.smackx.packet.*;
 import org.osgi.framework.*;
 import org.xmpp.jnodes.smack.*;
@@ -400,11 +405,6 @@ public class ProtocolProviderServiceJabberImpl
      */
     private KeepAliveManager keepAliveManager = null;
 
-    /**
-     * The version manager.
-     */
-    private VersionManager versionManager = null;
-
     // load xmpp manager classes
     static
     {
@@ -613,7 +613,7 @@ public class ProtocolProviderServiceJabberImpl
      */
     public boolean isSignalingTransportSecure()
     {
-        return connection != null && connection.isUsingTLS();
+        return connection != null && connection.isSecureConnection();
     }
 
     /**
@@ -628,7 +628,7 @@ public class ProtocolProviderServiceJabberImpl
         if(connection != null && connection.isConnected())
         {
             // Transport using a secure connection.
-            if(connection.isUsingTLS())
+            if(connection.isSecureConnection())
             {
                 return TransportProtocol.TLS;
             }
@@ -1145,8 +1145,6 @@ public class ProtocolProviderServiceJabberImpl
             disconnectAndCleanConnection();
         }
 
-        connection = new XMPPConnection(confConn);
-
         try
         {
             CertificateService cvs =
@@ -1181,18 +1179,19 @@ public class ProtocolProviderServiceJabberImpl
                     logger.debug(buff.toString());
                 }
 
-                connection.setCustomSslContext(sslContext);
+                confConn.setCustomSSLContext(sslContext);
             }
             else if (tlsRequired)
-                throw new XMPPException(
+                throw new SmackException(
                     "Certificate verification service is "
                     + "unavailable and TLS is required");
         }
         catch(GeneralSecurityException e)
         {
             logger.error("Error creating custom trust manager", e);
-            throw new XMPPException("Error creating custom trust manager", e);
+            throw new SmackException("Error creating custom trust manager", e);
         }
+        connection = new XMPPTCPConnection(confConn);
 
         if(debugger == null)
             debugger = new SmackPacketDebugger();
@@ -1223,7 +1222,7 @@ public class ProtocolProviderServiceJabberImpl
 
         if(!connection.isSecureConnection() && tlsRequired)
         {
-            throw new XMPPException("TLS is required by client");
+            throw new SmackException("TLS is required by client");
         }
 
         if(!connection.isConnected())
@@ -1371,8 +1370,9 @@ public class ProtocolProviderServiceJabberImpl
                     "SIP Communicator ")
                 + System.getProperty("sip-communicator.version","SVN");
 
-        ServiceDiscoveryManager.setIdentityName(name);
-        ServiceDiscoveryManager.setIdentityType("pc");
+        // TODO Smack 4
+//        ServiceDiscoveryManager.setIdentityName(name);
+//        ServiceDiscoveryManager.setIdentityType("pc");
 
         discoveryManager
             = new ScServiceDiscoveryManager(
@@ -2139,7 +2139,7 @@ public class ProtocolProviderServiceJabberImpl
      * Enable to listen for jabber connection events
      */
     private class JabberConnectionListener
-        implements ConnectionListener
+        extends AbstractConnectionListener
     {
         /**
          * Implements <tt>connectionClosed</tt> from <tt>ConnectionListener</tt>
@@ -2869,12 +2869,11 @@ public class ProtocolProviderServiceJabberImpl
             }
             if (discoverItems != null)
             {
-                Iterator<DiscoverItems.Item> discoverItemIter
+                List<DiscoverItems.Item> discoverItems
                     = discoverItems.getItems();
 
-                while (discoverItemIter.hasNext())
+                for (DiscoverItems.Item discoverItem : discoverItems)
                 {
-                    DiscoverItems.Item discoverItem = discoverItemIter.next();
                     String entityID = discoverItem.getEntityID();
                     DiscoverInfo discoverInfo = null;
 

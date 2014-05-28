@@ -8,6 +8,8 @@ package net.java.sip.communicator.service.protocol;
 
 import java.util.*;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import net.java.sip.communicator.service.protocol.event.*;
 
 /**
@@ -144,8 +146,9 @@ public interface OperationSetGeolocation
      *
      * @param geolocation a <tt>java.uil.Map</tt> containing the geolocation
      * details of the position we'd like to publish.
+     * @throws NotConnectedException 
      */
-    public void publishGeolocation(Map<String, String> geolocation);
+    public void publishGeolocation(Map<String, String> geolocation) throws NotConnectedException;
 
     /**
      * Retrieve the geolocation of the contact corresponding to

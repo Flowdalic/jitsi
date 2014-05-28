@@ -16,6 +16,8 @@ import net.java.sip.communicator.service.protocol.event.*;
 import net.java.sip.communicator.util.*;
 
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smack.util.StringUtils;
@@ -146,13 +148,13 @@ public class IncomingFileTransferRequestJabberImpl
      *
      * @return a boolean : <code>false</code> if the transfer fails,
      * <code>true</code> otherwise
+     * @throws SmackException 
      */
-    public FileTransfer acceptFile(File file)
+    public FileTransfer acceptFile(File file) throws SmackException
     {
         AbstractFileTransfer incomingTransfer = null;
 
         IncomingFileTransfer jabberTransfer = fileTransferRequest.accept();
-        try
         {
             incomingTransfer
                 = new IncomingFileTransferJabberImpl(
@@ -169,19 +171,16 @@ public class IncomingFileTransferRequestJabberImpl
                 .FileTransferProgressThread(
                 jabberTransfer, incomingTransfer, getFileSize()).start();
         }
-        catch (XMPPException e)
-        {
-            if (logger.isDebugEnabled())
-                logger.debug("Receiving file failed.", e);
-        }
+
 
         return incomingTransfer;
     }
 
     /**
      * Refuses the file transfer request.
+     * @throws NotConnectedException 
      */
-    public void rejectFile()
+    public void rejectFile() throws NotConnectedException
     {
         fileTransferRequest.reject();
 

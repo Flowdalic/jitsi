@@ -6,6 +6,8 @@
  */
 package net.java.sip.communicator.service.protocol;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 /**
  * Contains methods that would allow service users to re-request authorizations
  * to add a contact to their contact list or, send them an authorization before
@@ -44,9 +46,10 @@ public interface OperationSetExtendedAuthorizations
      * @param contact the <tt>Contact</tt> whom we're granting authorization
      * prior to receiving a request.
      * @throws OperationFailedException if we fail sending the authorization.
+     * @throws NotConnectedException 
      */
     public void explicitAuthorize(Contact contact)
-        throws OperationFailedException;
+        throws OperationFailedException, NotConnectedException;
 
     /**
      * Send an authorization request, requesting <tt>contact</tt> to add them

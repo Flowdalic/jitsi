@@ -29,6 +29,7 @@ import net.java.sip.communicator.util.*;
 import org.jitsi.service.neomedia.*;
 import org.jitsi.service.neomedia.MediaType; // disambiguate
 import org.jitsi.service.neomedia.control.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 
 /**
  * Our SIP implementation of the default CallPeer;
@@ -691,8 +692,10 @@ public class CallPeerSipImpl
      *
      * @param serverTransaction the transaction that the ACK was received in.
      * @param ack the ACK <tt>Request</tt> we need to process
+     * @throws NotConnectedException 
+     * @throws IllegalStateException 
      */
-    public void processAck(ServerTransaction serverTransaction, Request ack)
+    public void processAck(ServerTransaction serverTransaction, Request ack) throws IllegalStateException, NotConnectedException
     {
         ContentLengthHeader contentLength = ack.getContentLength();
         if ((contentLength != null) && (contentLength.getContentLength() > 0))
@@ -734,9 +737,11 @@ public class CallPeerSipImpl
      * @param tran the <tt>ClientTransaction</tt> that the response
      * arrived in.
      * @param response the 183 <tt>Response</tt> to process
+     * @throws NotConnectedException 
+     * @throws IllegalStateException 
      */
     public void processSessionProgress(ClientTransaction tran,
-                                       Response          response)
+                                       Response          response) throws IllegalStateException, NotConnectedException
     {
         if (response.getContentLength().getContentLength() == 0)
         {
@@ -786,9 +791,11 @@ public class CallPeerSipImpl
      * @param clientTransaction the <tt>ClientTransaction</tt> that the response
      * arrived in.
      * @param ok the OK <tt>Response</tt> to process
+     * @throws NotConnectedException 
+     * @throws IllegalStateException 
      */
     public void processInviteOK(ClientTransaction clientTransaction,
-                                 Response         ok)
+                                 Response         ok) throws IllegalStateException, NotConnectedException
     {
         try
         {
@@ -1373,9 +1380,10 @@ public class CallPeerSipImpl
      *
      * @throws OperationFailedException if we fail to construct or send the
      * INVITE request putting the remote side on/off hold.
+     * @throws NotConnectedException 
      */
     public void putOnHold(boolean onHold)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         CallPeerMediaHandlerSipImpl mediaHandler = getMediaHandler();
 

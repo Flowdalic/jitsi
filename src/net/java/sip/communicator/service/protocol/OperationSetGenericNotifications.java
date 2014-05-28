@@ -6,6 +6,8 @@
  */
 package net.java.sip.communicator.service.protocol;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import net.java.sip.communicator.service.protocol.event.*;
 
 /**
@@ -23,11 +25,12 @@ public interface OperationSetGenericNotifications
      * @param contact the contact to receive the event notification.
      * @param eventName the event name of the notification.
      * @param eventValue the event value of the notification.
+     * @throws NotConnectedException 
      */
     public void notifyForEvent(
             Contact contact,
             String eventName,
-            String eventValue);
+            String eventValue) throws NotConnectedException;
 
     /**
      * Generates new generic event notification and send it to the
@@ -48,12 +51,13 @@ public interface OperationSetGenericNotifications
      * @param eventName the event name of the notification.
      * @param eventValue the event value of the notification.
      * @param source the source that will be reported in the event.
+     * @throws NotConnectedException 
      */
     public void notifyForEvent(
             String jid,
             String eventName,
             String eventValue,
-            String source);
+            String source) throws NotConnectedException;
 
     /**
      * Registers a <tt>GenericEventListener</tt> with this

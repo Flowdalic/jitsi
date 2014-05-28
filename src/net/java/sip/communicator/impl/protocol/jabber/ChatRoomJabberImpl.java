@@ -18,12 +18,18 @@ import net.java.sip.communicator.util.*;
 
 import org.apache.commons.lang3.*;
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NoResponseException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.*;
+import org.jivesoftware.smack.packet.XMPPError.Condition;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.*;
+import org.jivesoftware.smackx.delay.packet.DelayInformation;
 import org.jivesoftware.smackx.muc.*;
-import org.jivesoftware.smackx.packet.*;
+import org.jivesoftware.smackx.muc.packet.MUCUser;
+import org.jivesoftware.smackx.xevent.MessageEventManager;
 
 /**
  * Implements chat rooms for jabber. The class encapsulates instances of the
@@ -518,8 +524,9 @@ public class ChatRoomJabberImpl
      *   may also invite users not on their contact list).
      * @param reason a reason, subject, or welcome message that would tell
      *   the the user why they are being invited.
+     * @throws NotConnectedException 
      */
-    public void invite(String userAddress, String reason)
+    public void invite(String userAddress, String reason) throws NotConnectedException
     {
         multiUserChat.invite(userAddress, reason);
     }
@@ -598,7 +605,7 @@ public class ChatRoomJabberImpl
                 this.provider.getConnection().addPacketListener(
                     presenceListener,
                     new AndFilter(
-                        new FromMatchesFilter(multiUserChat.getRoom()),
+                        FromMatchesFilter.create(multiUserChat.getRoom()),
                         new PacketTypeFilter(
                             org.jivesoftware.smack.packet.Presence.class)));
                 if(password == null)
@@ -621,7 +628,7 @@ public class ChatRoomJabberImpl
             opSetMuc.fireLocalUserPresenceEvent(this,
                 LocalUserChatRoomPresenceChangeEvent.LOCAL_USER_JOINED, null);
         }
-        catch (XMPPException ex)
+        catch (XMPPErrorException ex)
         {
             String errorMessage;
 
@@ -640,7 +647,8 @@ public class ChatRoomJabberImpl
                     OperationFailedException.GENERAL_ERROR,
                     ex);
             }
-            else if(ex.getXMPPError().getCode() == 401)
+            // TODO Smack 4 - 401 correct mapping?
+            else if(ex.getXMPPError().getCondition().equals(Condition.not_authorized))
             {
                 errorMessage
                     = "Failed to join chat room "
@@ -656,7 +664,8 @@ public class ChatRoomJabberImpl
                     OperationFailedException.AUTHENTICATION_FAILED,
                     ex);
             }
-            else if(ex.getXMPPError().getCode() == 407)
+            // TODO Smack 4 - 407 correct mapping?
+            else if(ex.getXMPPError().getCondition().equals(Condition.bad_request))
             {
                 errorMessage
                     = "Failed to join chat room "
@@ -791,8 +800,10 @@ public class ChatRoomJabberImpl
      * @param reason the reason for destroying.
      * @param alternateAddress the alternate address
      * @return <tt>true</tt> if the room is destroyed.
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
-    public boolean destroy(String reason, String alternateAddress)
+    public boolean destroy(String reason, String alternateAddress) throws NoResponseException, NotConnectedException
     {
         try
         {
@@ -808,16 +819,18 @@ public class ChatRoomJabberImpl
 
     /**
      * Leave this chat room.
+     * @throws NotConnectedException 
      */
-    public void leave()
+    public void leave() throws NotConnectedException
     {
         this.leave(null, null);
     }
 
     /**
      * Leave this chat room.
+     * @throws NotConnectedException 
      */
-    private void leave(String reason, String alternateAddress)
+    private void leave(String reason, String alternateAddress) throws NotConnectedException
     {
         OperationSetBasicTelephonyJabberImpl basicTelephony
             = (OperationSetBasicTelephonyJabberImpl) provider
@@ -913,9 +926,10 @@ public class ChatRoomJabberImpl
      * @param message the <tt>Message</tt> to send.
      * @throws OperationFailedException if sending the message fails for some
      * reason.
+     * @throws NotConnectedException 
      */
     public void sendMessage(Message message)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
          try
          {
@@ -1496,9 +1510,12 @@ public class ChatRoomJabberImpl
      *
      * @throws OperationFailedException if the new nickname already exist in
      * this room
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
+    @Override
     public void setUserNickname(String nickname)
-        throws OperationFailedException
+        throws OperationFailedException, NoResponseException, NotConnectedException
     {
         try
         {
@@ -1530,9 +1547,11 @@ public class ChatRoomJabberImpl
      * In particular, an error can occur if a moderator or a user with an
      * affiliation of "owner" or "admin" was tried to be banned or if the user
      * that is banning have not enough permissions to ban.
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
     public void banParticipant(ChatRoomMember chatRoomMember, String reason)
-        throws OperationFailedException
+        throws OperationFailedException, NoResponseException, NotConnectedException
     {
         try
         {
@@ -1540,13 +1559,13 @@ public class ChatRoomJabberImpl
                 ((ChatRoomMemberJabberImpl)chatRoomMember).getJabberID(),
                 reason);
         }
-        catch (XMPPException e)
+        catch (XMPPErrorException e)
         {
             logger.error("Failed to ban participant.", e);
 
             // If a moderator or a user with an affiliation of "owner" or "admin"
             // was intended to be kicked.
-            if (e.getXMPPError().getCode() == 405)
+            if (e.getXMPPError().getCondition().equals(Condition.forbidden))
             {
                 throw new OperationFailedException(
                     "Kicking an admin user or a chat room owner is a forbidden "
@@ -1581,13 +1600,13 @@ public class ChatRoomJabberImpl
         {
             multiUserChat.kickParticipant(member.getName(), reason);
         }
-        catch (XMPPException e)
+        catch (XMPPErrorException e)
         {
             logger.error("Failed to kick participant.", e);
 
             // If a moderator or a user with an affiliation of "owner" or "admin"
             // was intended to be kicked.
-            if (e.getXMPPError().getCode() == 405) //not allowed
+            if (e.getXMPPError().getCondition().equals(Condition.not_allowed))
             {
                 throw new OperationFailedException(
                     "Kicking an admin user or a chat room owner is a forbidden "
@@ -1596,7 +1615,7 @@ public class ChatRoomJabberImpl
             }
             // If a participant that intended to kick another participant does
             // not have kicking privileges.
-            else if (e.getXMPPError().getCode() == 403) //forbidden
+            else if (e.getXMPPError().getCondition().equals(Condition.forbidden))
             {
                 throw new OperationFailedException(
                     "The user that intended to kick another participant does" +
@@ -1761,9 +1780,10 @@ public class ChatRoomJabberImpl
      * @param name the name of the conference
      * @return the <tt>ConferenceDescription</tt> that was announced (e.g.
      * <tt>cd</tt> on success or <tt>null</tt> on failure)
+     * @throws NotConnectedException 
      */
     public ConferenceDescription publishConference(ConferenceDescription cd,
-        String name)
+        String name) throws NotConnectedException
     {
         if (publishedConference != null)
         {
@@ -1848,8 +1868,10 @@ public class ChatRoomJabberImpl
      * Returns the ids of the users that has the member role in the room.
      * When the room is member only, this are the users allowed to join.
      * @return the ids of the users that has the member role in the room.
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
-    public List<String> getMembersWhiteList()
+    public List<String> getMembersWhiteList() throws NoResponseException, NotConnectedException
     {
         List<String> res = new ArrayList<String>();
         try
@@ -1872,8 +1894,11 @@ public class ChatRoomJabberImpl
      * Changes the list of users that has role member for this room.
      * When the room is member only, this are the users allowed to join.
      * @param members the ids of user to have member role.
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
-    public void setMembersWhiteList(List<String> members)
+    @Override
+    public void setMembersWhiteList(List<String> members) throws NoResponseException, NotConnectedException
     {
         try
         {
@@ -2045,15 +2070,16 @@ public class ChatRoomJabberImpl
                     logger.info("Message error received from " + fromUserName);
 
                 XMPPError error = packet.getError();
-                int errorCode = error.getCode();
+                String errorCode = error.getCondition();
                 int errorResultCode
                     = ChatRoomMessageDeliveryFailedEvent.UNKNOWN_ERROR;
                 String errorReason = error.getMessage();
 
-                if(errorCode == 503)
+                // TODO Smack 4 correct mapping 503
+                if(errorCode.equals(Condition.bad_request))
                 {
-                    org.jivesoftware.smackx.packet.MessageEvent msgEvent =
-                        (org.jivesoftware.smackx.packet.MessageEvent)
+                    org.jivesoftware.smackx.xevent.packet.MessageEvent msgEvent =
+                        (org.jivesoftware.smackx.xevent.packet.MessageEvent)
                             packet.getExtension("x", "jabber:x:event");
                     if(msgEvent != null && msgEvent.isOffline())
                     {

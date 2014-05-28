@@ -6,6 +6,8 @@
  */
 package net.java.sip.communicator.impl.protocol.jabber;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import net.java.sip.communicator.service.protocol.*;
 import net.java.sip.communicator.service.protocol.media.*;
 
@@ -70,9 +72,10 @@ public abstract class AbstractCallJabberGTalkImpl
      *
      * @throws OperationFailedException if problem occurred during message
      * generation or network problem
+     * @throws NotConnectedException 
      */
     public abstract void modifyVideoContent()
-        throws OperationFailedException;
+        throws OperationFailedException, NotConnectedException;
 
     /**
      * Returns the peer whose corresponding session has the specified

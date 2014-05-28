@@ -16,12 +16,13 @@ import net.java.sip.communicator.service.protocol.media.*;
 import net.java.sip.communicator.util.*;
 
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smack.packet.IQ.Type;
 import org.jivesoftware.smack.provider.*;
 import org.jivesoftware.smack.util.*;
-import org.jivesoftware.smackx.packet.*;
+import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 
 /**
  * Implements all call management logic and exports basic telephony support by
@@ -95,7 +96,7 @@ public class OperationSetBasicTelephonyJabberImpl
 
         if (registrationState == RegistrationState.REGISTERING)
         {
-            ProviderManager.getInstance().addIQProvider(
+            ProviderManager.addIQProvider(
                     JingleIQ.ELEMENT_NAME,
                     JingleIQ.NAMESPACE,
                     new JingleIQProvider());
@@ -165,10 +166,11 @@ public class OperationSetBasicTelephonyJabberImpl
      * an extension to the session-initiate IQ.
      *
      * Uses the supported transports of <tt>cd</tt>
+     * @throws NotConnectedException 
      */
     @Override public CallJabberImpl
         createCall(ConferenceDescription cd, final ChatRoom chatRoom)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         final CallJabberImpl call = new CallJabberImpl(this);
         
@@ -387,7 +389,7 @@ public class OperationSetBasicTelephonyJabberImpl
             di = protocolProvider.getDiscoveryManager().discoverInfo(
                     fullCalleeURI);
         }
-        catch (XMPPException ex)
+        catch (Exception ex)
         {
             logger.warn("could not retrieve info for " + fullCalleeURI, ex);
         }
@@ -477,13 +479,12 @@ public class OperationSetBasicTelephonyJabberImpl
         PresenceStatus jabberStatus = null;
         String calleeURI = null;
 
-        Iterator<Presence> it
+        List<Presence> presences;
             = getProtocolProvider().getConnection().getRoster().getPresences(
                     calleeAddress);
 
-        while(it.hasNext())
+        for (Presence presence : presences)
         {
-            Presence presence = it.next();
             int priority
                 = (presence.getPriority() == Integer.MIN_VALUE)
                     ? 0
@@ -651,9 +652,10 @@ public class OperationSetBasicTelephonyJabberImpl
      * put on hold; <tt>false</tt>, otherwise
      *
      * @throws OperationFailedException if we fail to send the "hold" message.
+     * @throws NotConnectedException 
      */
     private void putOnHold(CallPeer peer, boolean on)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         if(peer instanceof CallPeerJabberImpl)
             ((CallPeerJabberImpl) peer).putOnHold(on);
@@ -683,12 +685,13 @@ public class OperationSetBasicTelephonyJabberImpl
      * or simply a disconnect indicate by the reason.
      * @param reasonText the reason of the hangup. If the hangup is due to a
      * call failure, then this string could indicate the reason of the failure
+     * @throws NotConnectedException 
      *
      * @throws OperationFailedException if we fail to terminate the call.
      */
     public void hangupCallPeer(CallPeer peer,
                                int reasonCode,
-                               String reasonText)
+                               String reasonText) throws NotConnectedException
     {
         boolean failed = (reasonCode != HANGUP_REASON_NORMAL_CLEARING);
 

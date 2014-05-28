@@ -8,6 +8,8 @@ package net.java.sip.communicator.service.protocol;
 
 import java.util.*;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import net.java.sip.communicator.service.protocol.event.*;
 import net.java.sip.communicator.util.*;
 
@@ -260,6 +262,11 @@ public abstract class AbstractOperationSetBasicAutoAnswer
                 }
             }
             catch (OperationFailedException e)
+            {
+                logger.error("Could not answer to : " + peer
+                    + " caused by the following exception: " + e);
+            }
+            catch (NotConnectedException e)
             {
                 logger.error("Could not answer to : " + peer
                     + " caused by the following exception: " + e);

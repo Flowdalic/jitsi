@@ -15,6 +15,7 @@ import org.jitsi.util.*;
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.*;
+import org.jivesoftware.smackx.disco.packet.DiscoverItems;
 import org.jivesoftware.smackx.packet.*;
 import org.xmpp.jnodes.smack.*;
 
@@ -224,12 +225,9 @@ public class JingleNodesServiceDiscovery
                 {
                     for (final RosterEntry re : xmppConnection.getRoster().getEntries())
                     {
-                        for (final Iterator<Presence> i
-                                 = xmppConnection.getRoster()
-                                    .getPresences(re.getUser());
-                             i.hasNext();)
+                        for (Presence presence : xmppConnection.getRoster()
+                                    .getPresences(re.getUser()))
                         {
-                            final Presence presence = i.next();
                             if (presence.isAvailable())
                             {
                                 SmackServiceNode.deepSearch(
@@ -299,15 +297,13 @@ public class JingleNodesServiceDiscovery
                     new PacketIDFilter(items.getPacketID()));
             xmppConnection.sendPacket(items);
             DiscoverItems result = (DiscoverItems) collector.nextResult(
-                Math.round(SmackConfiguration.getPacketReplyTimeout() * 1.5));
+                Math.round(xmppConnection.getPacketReplyTimeout() * 1.5));
 
             if (result != null)
             {
                 // first search priority items
-                Iterator<DiscoverItems.Item> i = result.getItems();
-                for (DiscoverItems.Item item = i.hasNext() ? i.next() : null;
-                     item != null;
-                     item = i.hasNext() ? i.next() : null)
+                List<DiscoverItems.Item> i = result.getItems();
+                for (DiscoverItems.Item item : i)
                 {
                     for(String pref : prefixes)
                     {
@@ -332,9 +328,7 @@ public class JingleNodesServiceDiscovery
 
                 // now search rest
                 i = result.getItems();
-                for (DiscoverItems.Item item = i.hasNext() ? i.next() : null;
-                     item != null;
-                     item = i.hasNext() ? i.next() : null)
+                for (DiscoverItems.Item item : i)
                 {
                     // we may searched already this node if it starts
                     // with some of the prefixes

@@ -11,6 +11,9 @@ import net.java.sip.communicator.service.protocol.*;
 import org.jivesoftware.smack.*;
 
 import javax.net.ssl.*;
+import javax.security.sasl.SaslException;
+
+import java.io.IOException;
 import java.security.*;
 
 /**
@@ -49,10 +52,13 @@ public interface JabberLoginStrategy
      * @param userName userName to be used for the login.
      * @param resource the XMPP resource
      * @return true to continue connecting, false to abort
+     * @throws IOException 
+     * @throws SmackException 
+     * @throws SaslException 
      */
     public boolean login(XMPPConnection connection, String userName,
             String resource)
-            throws XMPPException;
+            throws XMPPException, SaslException, SmackException, IOException;
 
     /**
      * Is TLS required for this login strategy / account?

@@ -13,6 +13,9 @@ import net.java.sip.communicator.service.protocol.event.*;
 import org.jivesoftware.smack.*;
 
 import javax.net.ssl.*;
+import javax.security.sasl.SaslException;
+
+import java.io.IOException;
 import java.security.*;
 
 /**
@@ -103,10 +106,13 @@ public class LoginByPasswordStrategy
      * @param resource The XMPP resource.
      * @return always true.
      * @throws XMPPException
+     * @throws IOException 
+     * @throws SmackException 
+     * @throws SaslException 
      */
     public boolean login(XMPPConnection connection, String userName,
             String resource)
-            throws XMPPException
+            throws XMPPException, SaslException, SmackException, IOException
     {
         synchronized(modifySASLMechanisms)
         {

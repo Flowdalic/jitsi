@@ -15,6 +15,7 @@ import net.java.sip.communicator.service.protocol.event.*;
 import org.jitsi.service.neomedia.*;
 import org.jitsi.service.neomedia.device.*;
 import org.jitsi.service.neomedia.event.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 
 /**
  * A utility class implementing media control code shared between current
@@ -847,9 +848,16 @@ public abstract class MediaAwareCall<
 
             if (CONFERENCE_FOCUS.equals(propertyName))
             {
-                conferenceFocusChanged(
-                        (Boolean) ev.getOldValue(),
-                        (Boolean) ev.getNewValue());
+                try
+                {
+                    conferenceFocusChanged(
+                            (Boolean) ev.getOldValue(),
+                            (Boolean) ev.getNewValue());
+                }
+                catch (NotConnectedException e)
+                {
+                    // TODO Smack 4
+                }
             }
             else if (DEFAULT_DEVICE.equals(propertyName))
             {
@@ -876,8 +884,9 @@ public abstract class MediaAwareCall<
      * before the change
      * @param newValue the value of the property <tt>CONFERENCE_FOCUS</tt> after
      * the change
+     * @throws NotConnectedException 
      */
-    protected void conferenceFocusChanged(boolean oldValue, boolean newValue)
+    protected void conferenceFocusChanged(boolean oldValue, boolean newValue) throws NotConnectedException
     {
         firePropertyChange(CONFERENCE_FOCUS, oldValue, newValue);
     }

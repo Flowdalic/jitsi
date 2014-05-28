@@ -15,6 +15,8 @@ import java.util.*;
 import javax.swing.*;
 import javax.swing.text.*;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import net.java.sip.communicator.impl.gui.*;
 import net.java.sip.communicator.impl.gui.main.contactlist.*;
 import net.java.sip.communicator.impl.gui.main.contactlist.contactsource.*;
@@ -225,8 +227,15 @@ public class ChatTransferHandler
                 {
                     List<String> inviteList = new ArrayList<String>();
                     inviteList.add(contact);
-                    chatPanel.inviteContacts(   currentChatTransport,
-                                                inviteList, null);
+                    try
+                    {
+                        chatPanel.inviteContacts(   currentChatTransport,
+                                                    inviteList, null);
+                    }
+                    catch (NotConnectedException e)
+                    {
+                        return false;
+                    }
 
                     return true;
                 }

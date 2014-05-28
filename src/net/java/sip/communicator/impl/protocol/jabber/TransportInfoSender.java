@@ -6,6 +6,8 @@
  */
 package net.java.sip.communicator.impl.protocol.jabber;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import net.java.sip.communicator.impl.protocol.jabber.extensions.jingle.*;
 
 /**
@@ -25,6 +27,7 @@ public interface TransportInfoSender
      * @param contents the <tt>ContentPacketExtension</tt>s to be sent in a
      * <tt>transport-info</tt> <tt>JingleIQ</tt> from the local peer to the
      * remote peer
+     * @throws NotConnectedException 
      */
-    public void sendTransportInfo(Iterable<ContentPacketExtension> contents);
+    public void sendTransportInfo(Iterable<ContentPacketExtension> contents) throws NotConnectedException;
 }

@@ -10,7 +10,10 @@ import java.util.*;
 
 import org.jivesoftware.smack.*;
 import org.jivesoftware.smackx.*;
-import org.jivesoftware.smackx.ReportedData.*;
+import org.jivesoftware.smackx.search.ReportedData.Column;
+import org.jivesoftware.smackx.search.ReportedData.Row;
+import org.jivesoftware.smackx.xdata.FormField;
+import org.jivesoftware.smackx.xdata.packet.DataForm.ReportedData;
 
 import net.java.sip.communicator.service.protocol.*;
 import net.java.sip.communicator.service.protocol.event.*;

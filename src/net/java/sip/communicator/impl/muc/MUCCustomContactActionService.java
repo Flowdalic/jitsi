@@ -9,6 +9,8 @@ package net.java.sip.communicator.impl.muc;
 import java.util.*;
 
 import org.jitsi.service.resources.*;
+import org.jivesoftware.smack.SmackException.NoResponseException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 
 import net.java.sip.communicator.plugin.desktoputil.chat.*;
 import net.java.sip.communicator.service.contactsource.*;
@@ -233,8 +235,19 @@ public class MUCCustomContactActionService
                 if(destroyOptions == null)
                     return;
 
-                MUCActivator.getMUCService().destroyChatRoom(chatRoomWrapper,
-                    destroyOptions[0], destroyOptions[1]);
+                try
+                {
+                    MUCActivator.getMUCService().destroyChatRoom(chatRoomWrapper,
+                        destroyOptions[0], destroyOptions[1]);
+                }
+                catch (NoResponseException e)
+                {
+                    // TODO Smack 4
+                }
+                catch (NotConnectedException e)
+                {
+                    // TODO Smack 4
+                }
 
             }
         };

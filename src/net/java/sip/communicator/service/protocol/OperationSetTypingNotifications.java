@@ -6,6 +6,8 @@
  */
 package net.java.sip.communicator.service.protocol;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import net.java.sip.communicator.service.protocol.event.*;
 
 /**
@@ -75,7 +77,8 @@ public interface OperationSetTypingNotifications
      * not registered and initialized.
      * @throws java.lang.IllegalArgumentException if <tt>notifiedContact</tt> is
      * not an instance belonging to the underlying implementation.
+     * @throws NotConnectedException 
      */
     public void sendTypingNotification(Contact notifiedContact, int typingState)
-        throws IllegalStateException, IllegalArgumentException;
+        throws IllegalStateException, IllegalArgumentException, NotConnectedException;
 }

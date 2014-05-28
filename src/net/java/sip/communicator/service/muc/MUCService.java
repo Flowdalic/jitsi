@@ -8,6 +8,8 @@ package net.java.sip.communicator.service.muc;
 
 import java.util.*;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import net.java.sip.communicator.service.contactsource.*;
 import net.java.sip.communicator.service.protocol.*;
 import net.java.sip.communicator.util.*;
@@ -199,10 +201,11 @@ public abstract class MUCService
      * invitation
      * @param invitation the invitation to reject
      * @param reason the reason for the rejection
+     * @throws NotConnectedException 
      */
     public abstract void rejectInvitation(  OperationSetMultiUserChat multiUserChatOpSet,
                                    ChatRoomInvitation invitation,
-                                   String reason);
+                                   String reason) throws NotConnectedException;
 
     /**
      * Determines whether a specific <code>ChatRoom</code> is private i.e.
@@ -241,8 +244,9 @@ public abstract class MUCService
      *
      * @param chatRoomWrapper the chat room to leave.
      * @return <tt>ChatRoomWrapper</tt> instance associated with the chat room.
+     * @throws NotConnectedException 
      */
-    public abstract ChatRoomWrapper leaveChatRoom(ChatRoomWrapper chatRoomWrapper);
+    public abstract ChatRoomWrapper leaveChatRoom(ChatRoomWrapper chatRoomWrapper) throws NotConnectedException;
 
     /**
      * Finds <tt>ChatRoomWrapper</tt> instance associated with the given source

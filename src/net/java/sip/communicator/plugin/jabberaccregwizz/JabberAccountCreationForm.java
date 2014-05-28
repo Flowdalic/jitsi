@@ -16,6 +16,9 @@ import net.java.sip.communicator.plugin.desktoputil.*;
 import net.java.sip.communicator.util.*;
 
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.XMPPException.XMPPErrorException;
+import org.jivesoftware.smack.packet.XMPPError.Condition;
+import org.jivesoftware.smack.tcp.XMPPTCPConnection;
 
 /**
  * Dialog for adding a new Jabber account.
@@ -156,7 +159,7 @@ public class JabberAccountCreationForm
             ConnectionConfiguration config = new ConnectionConfiguration(
                 server, port);
 
-            xmppConnection = new XMPPConnection(config);
+            xmppConnection = new XMPPTCPConnection(config);
 
             xmppConnection.connect();
 
@@ -166,11 +169,11 @@ public class JabberAccountCreationForm
 
             return true;
         }
-        catch (XMPPException exc)
+        catch (XMPPErrorException exc)
         {
             logger.error(exc);
-            if (exc.getXMPPError() != null
-                && exc.getXMPPError().getCode() == 409)
+            // TODO Smack 4 correct mapping 409
+            if (exc.getXMPPError().getCondition().equals(Condition.conflict))
             {
                 showErrorMessage(Resources.getString(
                         "plugin.jabberaccregwizz.USER_EXISTS_ERROR"));

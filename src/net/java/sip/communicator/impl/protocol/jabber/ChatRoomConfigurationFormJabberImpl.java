@@ -12,8 +12,12 @@ import net.java.sip.communicator.service.protocol.*;
 import net.java.sip.communicator.util.*;
 
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NoResponseException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smackx.*;
 import org.jivesoftware.smackx.muc.*;
+import org.jivesoftware.smackx.xdata.Form;
+import org.jivesoftware.smackx.xdata.FormField;
 
 /**
  * The Jabber implementation of the <tt>ChatRoomConfigurationForm</tt>
@@ -74,11 +78,10 @@ public class ChatRoomConfigurationFormJabberImpl
     {
         Vector<ChatRoomConfigurationFormField> configFormFields = new Vector<ChatRoomConfigurationFormField>();
 
-        Iterator<FormField> smackFormFields =  smackConfigForm.getFields();
+        List<FormField> smackFormFields =  smackConfigForm.getFields();
 
-        while(smackFormFields.hasNext())
+        for (FormField smackFormField : smackFormFields)
         {
-            FormField smackFormField = smackFormFields.next();
 
             if(smackFormField == null
                 || smackFormField.getType().equals(FormField.TYPE_HIDDEN))
@@ -96,9 +99,11 @@ public class ChatRoomConfigurationFormJabberImpl
 
     /**
      * Sends the ready smack configuration form to the multi user chat.
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
     public void submit()
-        throws OperationFailedException
+        throws OperationFailedException, NoResponseException, NotConnectedException
     {
         if (logger.isTraceEnabled())
             logger.trace("Sends chat room configuration form to the server.");

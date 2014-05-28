@@ -11,6 +11,7 @@ import net.java.sip.communicator.service.protocol.media.*;
 import net.java.sip.communicator.util.*;
 
 import org.jitsi.service.neomedia.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 
 /**
  * Implements <tt>OperationSetVideoTelephony</tt> in order to give access to
@@ -152,9 +153,10 @@ public class OperationSetVideoTelephonyJabberImpl
      * @param peer the call peer that we'd like to answer.
      * @throws OperationFailedException with the corresponding code if we
      * encounter an error while performing this operation.
+     * @throws NotConnectedException 
      */
     public void answerVideoCallPeer(CallPeer peer)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         CallPeerJabberImpl callPeer = (CallPeerJabberImpl) peer;
 

@@ -17,7 +17,7 @@ import org.jivesoftware.smack.*;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.*;
 import org.jivesoftware.smack.util.*;
-import org.jivesoftware.smackx.packet.*;
+import org.jivesoftware.smackx.nick.packet.Nick;
 import org.osgi.framework.*;
 
 /**
@@ -491,14 +491,8 @@ public class ServerStoredContactListJabberImpl
             };
             jabberProvider.getConnection().addPacketInterceptor(
                 presenceInterceptor, new PacketTypeFilter(Presence.class));
-            // modify our reply timeout because some XMPP may send "result" IQ
-            // late (> 5 secondes).
-            SmackConfiguration.setPacketReplyTimeout(
-                ProtocolProviderServiceJabberImpl.SMACK_PACKET_REPLY_TIMEOUT);
 
             this.roster.createEntry(completeID, completeID, parentNames);
-
-            SmackConfiguration.setPacketReplyTimeout(5000);
 
             jabberProvider.getConnection().removePacketInterceptor(
                 presenceInterceptor);

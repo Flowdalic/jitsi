@@ -8,6 +8,8 @@ package net.java.sip.communicator.service.protocol;
 
 import java.util.*;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import net.java.sip.communicator.service.protocol.event.*;
 
 /**
@@ -54,12 +56,13 @@ public interface OperationSetPresence
      *             registered.
      * @throws OperationFailedException with code NETWORK_FAILURE if publishing
      *             the status fails due to a network error.
+     * @throws NotConnectedException 
      */
     public void publishPresenceStatus(PresenceStatus status,
         String statusMessage)
         throws IllegalArgumentException,
         IllegalStateException,
-        OperationFailedException;
+        OperationFailedException, NotConnectedException;
 
     /**
      * Returns the set of PresenceStatus objects that a user of this service may

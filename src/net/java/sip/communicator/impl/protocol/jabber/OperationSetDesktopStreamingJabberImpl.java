@@ -15,6 +15,7 @@ import net.java.sip.communicator.service.protocol.media.*;
 import org.jitsi.service.neomedia.*;
 import org.jitsi.service.neomedia.device.*;
 import org.jitsi.service.neomedia.format.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 
 /**
  * Implements all desktop streaming related functions for XMPP.
@@ -186,11 +187,12 @@ public class OperationSetDesktopStreamingJabberImpl
      * the specified <tt>Call</tt>; <tt>false</tt> to disallow it
      *
      * @throws OperationFailedException if initializing local video fails.
+     * @throws NotConnectedException 
      */
     public void setLocalVideoAllowed(Call call,
                                      MediaDevice mediaDevice,
                                      boolean allowed)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         AbstractCallJabberGTalkImpl<?> callImpl
             = (AbstractCallJabberGTalkImpl<?>) call;

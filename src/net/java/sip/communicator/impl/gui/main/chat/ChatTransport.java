@@ -9,6 +9,8 @@ package net.java.sip.communicator.impl.gui.main.chat;
 
 import java.io.*;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import net.java.sip.communicator.service.protocol.*;
 import net.java.sip.communicator.service.protocol.event.*;
 
@@ -208,8 +210,9 @@ public interface ChatTransport
      *
      * @param contactAddress the address of the contact we invite
      * @param reason the reason for the invite
+     * @throws NotConnectedException 
      */
-    public void inviteChatContact(String contactAddress, String reason);
+    public void inviteChatContact(String contactAddress, String reason) throws NotConnectedException;
 
     /**
      * Returns the parent session of this chat transport. A <tt>ChatSession</tt>

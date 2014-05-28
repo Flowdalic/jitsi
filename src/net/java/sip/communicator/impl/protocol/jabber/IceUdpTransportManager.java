@@ -24,6 +24,7 @@ import org.ice4j.ice.harvest.*;
 import org.ice4j.security.*;
 import org.jitsi.service.neomedia.*;
 import org.jitsi.util.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.packet.*;
 import org.xmpp.jnodes.smack.*;
 
@@ -317,12 +318,13 @@ public class IceUdpTransportManager
      * of the <tt>MediaStream</tt> with the specified <tt>MediaType</tt>
      * @throws OperationFailedException if anything goes wrong while
      * initializing the requested <tt>StreamConnector</tt>
+     * @throws NotConnectedException 
      * @see net.java.sip.communicator.service.protocol.media.TransportManager#
      * getStreamConnector(MediaType)
      */
     @Override
     public StreamConnector getStreamConnector(MediaType mediaType)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         StreamConnector streamConnector = super.getStreamConnector(mediaType);
 
@@ -502,13 +504,14 @@ public class IceUdpTransportManager
 
     /**
      * {@inheritDoc}
+     * @throws NotConnectedException 
      */
     protected PacketExtension startCandidateHarvest(
             ContentPacketExtension theirContent,
             ContentPacketExtension ourContent,
             TransportInfoSender transportInfoSender,
             String media)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         PacketExtension pe;
 
@@ -592,6 +595,7 @@ public class IceUdpTransportManager
      * {@link #wrapupCandidateHarvest()}.
      *
      * @throws OperationFailedException if we fail to allocate a port number.
+     * @throws NotConnectedException 
      * @see TransportManagerJabberImpl#startCandidateHarvest(List, List,
      * TransportInfoSender)
      */
@@ -600,7 +604,7 @@ public class IceUdpTransportManager
             List<ContentPacketExtension> theirOffer,
             List<ContentPacketExtension> ourAnswer,
             TransportInfoSender transportInfoSender)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         this.cpeList = ourAnswer;
 

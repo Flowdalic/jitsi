@@ -7,7 +7,7 @@
 package net.java.sip.communicator.impl.protocol.jabber;
 
 import org.jivesoftware.smack.util.*;
-import org.jivesoftware.smackx.packet.*;
+import org.jivesoftware.smackx.vcardtemp.packet.VCard;
 
 /**
  * Extends the smack vCard in order to manage the possibility to remove the

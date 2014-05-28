@@ -13,10 +13,15 @@ import net.java.sip.communicator.service.protocol.event.*;
 import net.java.sip.communicator.util.*;
 
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NoResponseException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.*;
 import org.jivesoftware.smackx.muc.*;
+import org.jivesoftware.smackx.xdata.Form;
+import org.jivesoftware.smackx.xdata.FormField;
 
 /**
  * A jabber implementation of the multi user chat operation set.
@@ -111,12 +116,14 @@ public class OperationSetMultiUserChatJabberImpl
      * supported by this server
      *
      * @return ChatRoom the chat room that we've just created.
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
     public ChatRoom createChatRoom(
             String roomName,
             Map<String, Object> roomProperties)
         throws OperationFailedException,
-               OperationNotSupportedException
+               OperationNotSupportedException, NoResponseException, NotConnectedException
     {
         //first make sure we are connected and the server supports multichat
         assertSupportedAndConnected();
@@ -149,11 +156,11 @@ public class OperationSetMultiUserChatJabberImpl
                 muc.create(JabberActivator.getGlobalDisplayDetailsService()
                     .getDisplayName(jabberProvider));
             }
-            catch (XMPPException ex)
+            catch (XMPPErrorException ex)
             {
                 logger.error("Failed to create chat room.", ex);
                 throw new OperationFailedException("Failed to create chat room"
-                                                   , ex.getXMPPError().getCode()
+                                                   , -1 // TODO Smack 4
                                                    , ex.getCause());
             }
 
@@ -174,10 +181,9 @@ public class OperationSetMultiUserChatJabberImpl
                 {
                     Form initForm = muc.getConfigurationForm();
                     form = initForm.createAnswerForm();
-                    Iterator<FormField> fieldIterator = initForm.getFields();
-                    while(fieldIterator.hasNext())
+                    List<FormField> fieldList = initForm.getFields();
+                    for (FormField initField : fieldList)
                     {
-                        FormField initField = fieldIterator.next();
                         if( initField == null ||
                             initField.getVariable() == null ||
                             initField.getType() == FormField.TYPE_FIXED ||
@@ -187,9 +193,9 @@ public class OperationSetMultiUserChatJabberImpl
                             = form.getField(initField.getVariable());
                         if(submitField == null)
                             continue;
-                        Iterator<String> value = initField.getValues();
-                        while(value.hasNext())
-                            submitField.addValue(value.next());
+                        List<String> values = initField.getValues();
+                        for (String value : values)
+                            submitField.addValue(value);
                     }
                     String[] fields = {"muc#roomconfig_membersonly",
                         "muc#roomconfig_allowinvites",
@@ -350,10 +356,13 @@ public class OperationSetMultiUserChatJabberImpl
      * the server.
      * @throws OperationNotSupportedException if the server does not support
      * multi user chat
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
+    @Override
     public List<String> getExistingChatRooms()
         throws  OperationFailedException,
-                OperationNotSupportedException
+                OperationNotSupportedException, NoResponseException, NotConnectedException
     {
         assertSupportedAndConnected();
 
@@ -446,9 +455,11 @@ public class OperationSetMultiUserChatJabberImpl
      *
      * @param invitation the connection to use for sending the rejection.
      * @param rejectReason the reason to reject the given invitation
+     * @throws NotConnectedException 
      */
+    @Override
     public void rejectInvitation(ChatRoomInvitation invitation,
-        String rejectReason)
+        String rejectReason) throws NotConnectedException
     {
         MultiUserChat.decline(jabberProvider.getConnection(),
             invitation.getTargetChatRoom().getName(),
@@ -524,9 +535,11 @@ public class OperationSetMultiUserChatJabberImpl
      *
      * @throws OperationFailedException if we fail retrieving the conference
      * service name
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
     private String getCanonicalRoomName(String roomName)
-        throws OperationFailedException
+        throws OperationFailedException, NoResponseException, NotConnectedException
     {
 
         if (roomName.indexOf('@') > 0)
@@ -597,19 +610,17 @@ public class OperationSetMultiUserChatJabberImpl
      * @return a list of all currently joined chat rooms
      * @throws OperationFailedException if the operation fails
      * @throws OperationNotSupportedException if the operation is not supported
+     * @throws NotConnectedException 
+     * @throws XMPPErrorException 
+     * @throws NoResponseException 
      */
     public List<String> getCurrentlyJoinedChatRooms(ChatRoomMember chatRoomMember)
-        throws OperationFailedException, OperationNotSupportedException
+        throws OperationFailedException, OperationNotSupportedException, NoResponseException, XMPPErrorException, NotConnectedException
     {
         assertSupportedAndConnected();
 
-        Iterator<String> joinedRoomsIter = MultiUserChat.getJoinedRooms(
+        return MultiUserChat.getJoinedRooms(
             getXmppConnection(), chatRoomMember.getContactAddress());
-        List<String> joinedRooms = new ArrayList<String>();
-
-        while (joinedRoomsIter.hasNext())
-            joinedRooms.add(joinedRoomsIter.next());
-        return joinedRooms;
     }
 
     /**

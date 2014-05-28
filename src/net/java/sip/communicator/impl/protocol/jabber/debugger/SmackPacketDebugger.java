@@ -89,11 +89,11 @@ public class SmackPacketDebugger
                 if(packet instanceof Message)
                 {
                     packetBytes = cloneAnonyMessage(packet)
-                        .toXML().getBytes("UTF-8");
+                        .toXML().toString().getBytes("UTF-8");
                 }
                 else
                 {
-                    packetBytes = packet.toXML().getBytes("UTF-8");
+                    packetBytes = packet.toXML().toString().getBytes("UTF-8");
                 }
 
                 packetLogging.logPacket(
@@ -139,9 +139,6 @@ public class SmackPacketDebugger
         // we don't modify them, just use existing
         for(PacketExtension pex : packet.getExtensions())
             newMsg.addExtension(pex);
-
-        for(String propName : packet.getPropertyNames())
-            newMsg.setProperty(propName, packet.getProperty(propName));
 
         newMsg.setError(packet.getError());
 
@@ -194,11 +191,11 @@ public class SmackPacketDebugger
                 if(packet instanceof Message)
                 {
                     packetBytes = cloneAnonyMessage(packet)
-                        .toXML().getBytes("UTF-8");
+                        .toXML().toString().getBytes("UTF-8");
                 }
                 else
                 {
-                    packetBytes = packet.toXML().getBytes("UTF-8");
+                    packetBytes = packet.toXML().toString().getBytes("UTF-8");
                 }
 
                 packetLogging.logPacket(

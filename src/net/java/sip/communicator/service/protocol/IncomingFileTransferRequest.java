@@ -9,6 +9,9 @@ package net.java.sip.communicator.service.protocol;
 
 import java.io.*;
 
+import org.jivesoftware.smack.SmackException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 /**
  * Used for incoming file transfer request.
  *
@@ -65,13 +68,15 @@ public interface IncomingFileTransferRequest
      *
      * @param file the file to accept
      * @return the <tt>FileTransfer</tt> object managing the transfer
+     * @throws SmackException 
      */
-    public FileTransfer acceptFile(File file);
+    public FileTransfer acceptFile(File file) throws SmackException;
 
     /**
      * Function called to refuse the file.
+     * @throws NotConnectedException 
      */
-    public void rejectFile();
+    public void rejectFile() throws NotConnectedException;
 
     /**
      * Returns the thumbnail contained in this request.

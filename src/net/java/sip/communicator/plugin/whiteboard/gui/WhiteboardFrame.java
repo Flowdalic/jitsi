@@ -17,6 +17,8 @@ import java.util.concurrent.*;
 import javax.imageio.*;
 import javax.swing.*;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import net.java.sip.communicator.plugin.whiteboard.*;
 import net.java.sip.communicator.plugin.whiteboard.gui.whiteboardshapes.*;
 import net.java.sip.communicator.service.protocol.*;
@@ -1129,7 +1131,14 @@ public class WhiteboardFrame
         {
             public void actionPerformed(ActionEvent e)
             {
-                session.leave();
+                try
+                {
+                    session.leave();
+                }
+                catch (NotConnectedException e1)
+                {
+                    // TODO Smack 4
+                }
             }
         });
         fileMenu.add(exitMenuItem);

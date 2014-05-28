@@ -15,6 +15,7 @@ import net.java.sip.communicator.impl.protocol.jabber.jinglesdp.*;
 import net.java.sip.communicator.service.protocol.*;
 
 import org.jitsi.service.neomedia.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.packet.*;
 
 /**
@@ -224,10 +225,12 @@ public class RawUdpTransportManager
      * @param name the name of the content to be removed from the
      * transport-related part of the session represented by this
      * <tt>TransportManagerJabberImpl</tt>
+     * @throws IllegalArgumentException 
+     * @throws NotConnectedException 
      * @see TransportManagerJabberImpl#removeContent(String)
      */
     @Override
-    public void removeContent(String name)
+    public void removeContent(String name) throws NotConnectedException, IllegalArgumentException
     {
         if (local != null)
             removeContent(local, name);
@@ -241,8 +244,10 @@ public class RawUdpTransportManager
      *
      * @param name the name of the content to be removed from the remote
      * counterpart of the negotiation between the local and the remote peers
+     * @throws IllegalArgumentException 
+     * @throws NotConnectedException 
      */
-    private void removeRemoteContent(String name)
+    private void removeRemoteContent(String name) throws NotConnectedException, IllegalArgumentException
     {
         for (Iterator<Iterable<ContentPacketExtension>> remoteIter
                     = remotes.iterator();
@@ -298,6 +303,7 @@ public class RawUdpTransportManager
      * {@link #wrapupCandidateHarvest()}.
      *
      * @throws OperationFailedException if we fail to allocate a port number.
+     * @throws NotConnectedException 
      * @see TransportManagerJabberImpl#startCandidateHarvest(List, List,
      * TransportInfoSender)
      */
@@ -306,7 +312,7 @@ public class RawUdpTransportManager
             List<ContentPacketExtension> theirOffer,
             List<ContentPacketExtension> ourAnswer,
             TransportInfoSender transportInfoSender)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         this.local = ourAnswer;
 
@@ -323,11 +329,13 @@ public class RawUdpTransportManager
      * and the remote peer
      * @return <tt>true</tt> because <tt>RawUdpTransportManager</tt> does not
      * perform connectivity checks
+     * @throws IllegalArgumentException 
+     * @throws NotConnectedException 
      * @see TransportManagerJabberImpl#startConnectivityEstablishment(Iterable)
      */
     @Override
     public boolean startConnectivityEstablishment(
-            Iterable<ContentPacketExtension> remote)
+            Iterable<ContentPacketExtension> remote) throws NotConnectedException, IllegalArgumentException
     {
         if ((remote != null) && !remotes.contains(remote))
         {

@@ -15,6 +15,7 @@ import net.java.sip.communicator.util.*;
 import org.ice4j.ice.*;
 import org.jitsi.service.configuration.*;
 import org.jitsi.service.neomedia.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 
 /**
  * <tt>TransportManager</tt>s are responsible for allocating ports, gathering
@@ -134,9 +135,10 @@ public abstract class TransportManager<U extends MediaAwareCallPeer<?, ?, ?>>
      *
      * @throws OperationFailedException in case we failed to initialize our
      * connector.
+     * @throws NotConnectedException 
      */
     public StreamConnector getStreamConnector(MediaType mediaType)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         int streamConnectorIndex = mediaType.ordinal();
         StreamConnector streamConnector
@@ -182,8 +184,9 @@ public abstract class TransportManager<U extends MediaAwareCallPeer<?, ?, ?>>
      *
      * @param mediaType the <tt>MediaType</tt> associated with the
      * <tt>StreamConnector</tt> to close
+     * @throws NotConnectedException 
      */
-    public void closeStreamConnector(MediaType mediaType)
+    public void closeStreamConnector(MediaType mediaType) throws NotConnectedException
     {
         int index = mediaType.ordinal();
         StreamConnector streamConnector = streamConnectors[index];
@@ -205,11 +208,12 @@ public abstract class TransportManager<U extends MediaAwareCallPeer<?, ?, ?>>
      * @param mediaType the <tt>MediaType</tt> associated with the specified
      * <tt>streamConnector</tt>
      * @param streamConnector the <tt>StreamConnector</tt> to be closed
+     * @throws NotConnectedException 
      * @see #closeStreamConnector(MediaType)
      */
     protected void closeStreamConnector(
             MediaType mediaType,
-            StreamConnector streamConnector)
+            StreamConnector streamConnector) throws NotConnectedException
     {
         /*
          * XXX The connected owns the sockets so it is important that it

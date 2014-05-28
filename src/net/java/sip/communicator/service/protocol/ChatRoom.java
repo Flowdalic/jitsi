@@ -8,6 +8,9 @@ package net.java.sip.communicator.service.protocol;
 
 import java.util.*;
 
+import org.jivesoftware.smack.SmackException.NoResponseException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import net.java.sip.communicator.service.protocol.event.*;
 
 /**
@@ -102,8 +105,9 @@ public interface ChatRoom
      * will be delivered. Depending on the underlying protocol and
      * implementation leave() might cause the room to be destroyed if it has
      * been created by the local user.
+     * @throws NotConnectedException 
      */
-    public void leave();
+    public void leave() throws NotConnectedException;
 
     /**
      * Returns the last known room subject/theme or <tt>null</tt> if the user
@@ -168,9 +172,11 @@ public interface ChatRoom
      *
      * @throws OperationFailedException if the new nickname already exist in
      * this room
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
     public void setUserNickname(String nickname)
-       throws OperationFailedException;
+       throws OperationFailedException, NoResponseException, NotConnectedException;
 
     /**
      * Adds a listener that will be notified of changes in our participation in
@@ -272,8 +278,9 @@ public interface ChatRoom
      * may also invite users not on their contact list).
      * @param reason a reason, subject, or welcome message that would tell the
      * the user why they are being invited.
+     * @throws NotConnectedException 
      */
-    public void invite(String userAddress, String reason);
+    public void invite(String userAddress, String reason) throws NotConnectedException;
 
     /**
      * Returns a <tt>List</tt> of <tt>ChatRoomMember</tt>s corresponding to all
@@ -333,9 +340,10 @@ public interface ChatRoom
      * @param message the <tt>Message</tt> to send.
      * @throws OperationFailedException if sending the message fails for some
      * reason.
+     * @throws NotConnectedException 
      */
     public void sendMessage(Message message)
-        throws OperationFailedException;
+        throws OperationFailedException, NotConnectedException;
 
     /**
      * Returns a reference to the provider that created this room.
@@ -372,9 +380,11 @@ public interface ChatRoom
      * In particular, an error can occur if a moderator or a user with an
      * affiliation of "owner" or "admin" was tried to be banned or if the user
      * that is banning have not enough permissions to ban.
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
     public void banParticipant(ChatRoomMember chatRoomMember, String reason)
-        throws OperationFailedException;
+        throws OperationFailedException, NoResponseException, NotConnectedException;
 
     /**
      * Kicks a visitor or participant from the room.
@@ -549,9 +559,10 @@ public interface ChatRoom
      * @param cd the description to publish
      * @param name the name of the conference
      * @return the published conference
+     * @throws NotConnectedException 
      */
     public ConferenceDescription publishConference(ConferenceDescription cd,
-        String name);
+        String name) throws NotConnectedException;
 
     /**
      * Updates the presence status of private messaging contact.
@@ -602,20 +613,26 @@ public interface ChatRoom
      * @param reason the reason for destroying.
      * @param alternateAddress the alternate address
      * @return <tt>true</tt> if the room is destroyed.
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
-    public boolean destroy(String reason, String alternateAddress);
+    public boolean destroy(String reason, String alternateAddress) throws NoResponseException, NotConnectedException;
 
     /**
      * Returns the ids of the users that has the member role in the room.
      * When the room is member only, this are the users allowed to join.
      * @return the ids of the users that has the member role in the room.
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
-    public List<String> getMembersWhiteList();
+    public List<String> getMembersWhiteList() throws NoResponseException, NotConnectedException;
 
     /**
      * Changes the list of users that has role member for this room.
      * When the room is member only, this are the users allowed to join.
      * @param members the ids of user to have member role.
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
-    public void setMembersWhiteList(List<String> members);
+    public void setMembersWhiteList(List<String> members) throws NoResponseException, NotConnectedException;
 }

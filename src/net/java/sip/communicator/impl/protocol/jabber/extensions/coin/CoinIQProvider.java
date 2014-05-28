@@ -56,42 +56,40 @@ public class CoinIQProvider
      */
     public CoinIQProvider()
     {
-        ProviderManager providerManager = ProviderManager.getInstance();
-
-        providerManager.addExtensionProvider(
+        ProviderManager.addExtensionProvider(
                 UserRolesPacketExtension.ELEMENT_NAME,
                 UserRolesPacketExtension.NAMESPACE,
                 new DefaultPacketExtensionProvider
                     <UserRolesPacketExtension>(
                                     UserRolesPacketExtension.class));
 
-        providerManager.addExtensionProvider(
+        ProviderManager.addExtensionProvider(
                 URIPacketExtension.ELEMENT_NAME,
                 URIPacketExtension.NAMESPACE,
                 new DefaultPacketExtensionProvider
                     <URIPacketExtension>(
                                     URIPacketExtension.class));
 
-        providerManager.addExtensionProvider(
+        ProviderManager.addExtensionProvider(
                 SIPDialogIDPacketExtension.ELEMENT_NAME,
                 SIPDialogIDPacketExtension.NAMESPACE,
                 new DefaultPacketExtensionProvider
                     <SIPDialogIDPacketExtension>(
                                     SIPDialogIDPacketExtension.class));
 
-        providerManager.addExtensionProvider(
+        ProviderManager.addExtensionProvider(
                 ConferenceMediumPacketExtension.ELEMENT_NAME,
                 ConferenceMediumPacketExtension.NAMESPACE,
                 new ConferenceMediumProvider());
 
-        providerManager.addExtensionProvider(
+        ProviderManager.addExtensionProvider(
                 ConferenceMediaPacketExtension.ELEMENT_NAME,
                 ConferenceMediaPacketExtension.NAMESPACE,
                 new DefaultPacketExtensionProvider
                     <ConferenceMediaPacketExtension>(
                                     ConferenceMediaPacketExtension.class));
 
-        providerManager.addExtensionProvider(
+        ProviderManager.addExtensionProvider(
                 CallInfoPacketExtension.ELEMENT_NAME,
                 CallInfoPacketExtension.NAMESPACE,
                 new DefaultPacketExtensionProvider

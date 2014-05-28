@@ -8,6 +8,8 @@ package net.java.sip.communicator.service.protocol;
 
 import java.util.*;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import net.java.sip.communicator.service.protocol.event.*;
 
 /**
@@ -70,9 +72,10 @@ public interface ProtocolProviderService
      * @throws OperationFailedException with the corresponding code it the
      * registration fails for some reason (e.g. a networking error or an
      * implementation problem).
+     * @throws NotConnectedException 
      */
     public void unregister()
-        throws OperationFailedException;
+        throws OperationFailedException, NotConnectedException;
 
     /**
      * Indicates whether or not this provider is registered

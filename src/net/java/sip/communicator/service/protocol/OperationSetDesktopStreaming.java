@@ -9,6 +9,7 @@ package net.java.sip.communicator.service.protocol;
 import java.text.*;
 
 import org.jitsi.service.neomedia.device.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 
 /**
  * Represents an <tt>OperationSet</tt> giving access to desktop streaming
@@ -70,11 +71,12 @@ public interface OperationSetDesktopStreaming
      * the specified <tt>Call</tt>; <tt>false</tt> to disallow it
      *
      * @throws OperationFailedException if initializing local video fails.
+     * @throws NotConnectedException 
      */
     public void setLocalVideoAllowed(   Call call,
                                         MediaDevice mediaDevice,
                                         boolean allowed)
-        throws OperationFailedException;
+        throws OperationFailedException, NotConnectedException;
 
     /**
      * If the streaming is partial (not the full desktop).

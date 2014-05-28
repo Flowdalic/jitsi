@@ -19,12 +19,15 @@ import net.java.sip.communicator.service.protocol.jabberconstants.*;
 import net.java.sip.communicator.util.*;
 
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.XMPPException.XMPPErrorException;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.*;
+import org.jivesoftware.smack.packet.XMPPError.Condition;
 import org.jivesoftware.smack.provider.*;
 import org.jivesoftware.smackx.filetransfer.FileTransfer.Status;
 import org.jivesoftware.smackx.filetransfer.*;
 import org.jivesoftware.smackx.packet.*;
+import org.jivesoftware.smackx.si.packet.StreamInitiation;
 
 /**
  * The Jabber implementation of the <tt>OperationSetFileTransfer</tt>
@@ -134,15 +137,14 @@ public class OperationSetFileTransferJabberImpl
             }
             else
             {
-                Iterator<Presence> iter = jabberProvider.getConnection().getRoster()
+                List<Presence> presences = jabberProvider.getConnection().getRoster()
                     .getPresences(toContact.getAddress());
                 int bestPriority = -1;
                 
                 PresenceStatus jabberStatus = null;
-    
-                while(iter.hasNext())
+
+                for (Presence presence : presences)
                 {
-                    Presence presence = iter.next();
     
                     if(jabberProvider.isFeatureListSupported(presence.getFrom(),
                         new String[]{"http://jabber.org/protocol/si",
@@ -344,12 +346,12 @@ public class OperationSetFileTransferJabberImpl
 
                 fileTransferRequestListener = new FileTransferRequestListener();
 
-                ProviderManager.getInstance().addIQProvider(
+                ProviderManager.addIQProvider(
                     FileElement.ELEMENT_NAME,
                     FileElement.NAMESPACE,
                     new FileElement());
 
-                ProviderManager.getInstance().addIQProvider(
+                ProviderManager.addIQProvider(
                     ThumbnailIQ.ELEMENT_NAME,
                     ThumbnailIQ.NAMESPACE,
                     new ThumbnailIQ());
@@ -368,17 +370,13 @@ public class OperationSetFileTransferJabberImpl
                         fileTransferRequestListener);
                 }
 
-                ProviderManager providerManager = ProviderManager.getInstance();
-                if (providerManager != null)
-                {
-                    ProviderManager.getInstance().removeIQProvider(
+                ProviderManager.removeIQProvider(
                         FileElement.ELEMENT_NAME,
                         FileElement.NAMESPACE);
 
-                    ProviderManager.getInstance().removeIQProvider(
+                ProviderManager.removeIQProvider(
                         ThumbnailIQ.ELEMENT_NAME,
                         ThumbnailIQ.NAMESPACE);
-                }
 
                 fileTransferRequestListener = null;
                 manager = null;
@@ -417,7 +415,7 @@ public class OperationSetFileTransferJabberImpl
 
             // Send a thumbnail request if a thumbnail is advertised in the
             // streamInitiation packet.
-            org.jivesoftware.smackx.packet.StreamInitiation.File file
+            org.jivesoftware.smackx.si.packet.StreamInitiation.File file
                 = streamInitiation.getFile();
 
             boolean isThumbnailedFile = false;
@@ -632,14 +630,15 @@ public class OperationSetFileTransferJabberImpl
                 logger.error("An exception occured while transfering file: ",
                     jabberTransfer.getException());
 
-                if(jabberTransfer.getException() instanceof XMPPException)
+                if(jabberTransfer.getException() instanceof XMPPErrorException)
                 {
                     XMPPError error =
-                        ((XMPPException)jabberTransfer.getException())
+                        ((XMPPErrorException)jabberTransfer.getException())
                             .getXMPPError();
                     if (error != null)
-                        if(error.getCode() == 406
-                           || error.getCode() == 403)
+                        // TODO Smack 4 406 403 mapping
+                        if(error.getCondition().equals(Condition.bad_request)
+                           || error.getCondition().equals(Condition.forbidden))
                             status = FileTransferStatusChangeEvent.REFUSED;
                 }
 

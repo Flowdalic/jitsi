@@ -11,9 +11,11 @@ import java.util.*;
 import net.java.sip.communicator.impl.protocol.sip.sdp.*;
 import net.java.sip.communicator.service.protocol.*;
 import net.java.sip.communicator.service.protocol.media.*;
+
 import org.ice4j.ice.*;
 import org.ice4j.ice.sdp.*;
 import org.jitsi.service.neomedia.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 
 import javax.sdp.*;
 
@@ -176,8 +178,9 @@ public class IceTransportManagerSipImpl
     /**
      * Releases the resources acquired by this <tt>TransportManager</tt> and
      * prepares it for garbage collection.
+     * @throws NotConnectedException 
      */
-    public void close()
+    public void close() throws NotConnectedException
     {
         for (MediaType mediaType : MediaType.values())
             closeStreamConnector(mediaType);

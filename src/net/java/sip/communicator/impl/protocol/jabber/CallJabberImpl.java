@@ -19,9 +19,10 @@ import net.java.sip.communicator.util.*;
 
 import org.jitsi.service.neomedia.*;
 import org.jivesoftware.smack.*;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
 import org.jivesoftware.smack.filter.*;
 import org.jivesoftware.smack.packet.*;
-import org.jivesoftware.smackx.packet.*;
+import org.jivesoftware.smackx.disco.packet.DiscoverInfo;
 
 /**
  * A Jabber implementation of the <tt>Call</tt> abstract class encapsulating
@@ -126,9 +127,10 @@ public class CallJabberImpl
      * Sends a <tt>content</tt> message to each of the <tt>CallPeer</tt>s
      * associated with this <tt>CallJabberImpl</tt> in order to include/exclude
      * the &quot;isfocus&quot; attribute.
+     * @throws NotConnectedException 
      */
     @Override
-    protected void conferenceFocusChanged(boolean oldValue, boolean newValue)
+    protected void conferenceFocusChanged(boolean oldValue, boolean newValue) throws NotConnectedException
     {
         try
         {
@@ -160,11 +162,12 @@ public class CallJabberImpl
      * @return a <tt>ColibriConferenceIQ</tt> which describes the allocated
      * colibri (conference) channels for the specified <tt>mediaTypes</tt> which
      * are to be used by the specified <tt>peer</tt>; otherwise, <tt>null</tt>
+     * @throws NotConnectedException 
      */
     public ColibriConferenceIQ createColibriChannels(
             CallPeerJabberImpl peer,
             Map<ContentPacketExtension,ContentPacketExtension> contentMap)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         if (!getConference().isJitsiVideobridge())
             return null;
@@ -309,9 +312,8 @@ public class CallJabberImpl
         conferenceRequest.setType(IQ.Type.GET);
         connection.sendPacket(conferenceRequest);
 
-        Packet response
-            = packetCollector.nextResult(
-                    SmackConfiguration.getPacketReplyTimeout());
+
+        Packet response = packetCollector.nextResult();
 
         packetCollector.cancel();
 
@@ -545,10 +547,11 @@ public class CallJabberImpl
      * conference channels to be expired
      * @param conference a <tt>ColibriConferenceIQ</tt> which specifies the
      * (colibri) conference channels to be expired
+     * @throws NotConnectedException 
      */
     public void expireColibriChannels(
             CallPeerJabberImpl peer,
-            ColibriConferenceIQ conference)
+            ColibriConferenceIQ conference) throws NotConnectedException
     {
         // Formulate the ColibriConferenceIQ request which is to be sent.
         if (colibri != null)
@@ -654,10 +657,11 @@ public class CallJabberImpl
      * by searching the <tt>ColibriConferenceIQ</tt>, but it's more convenient
      * to have it)
      * @param direction the <tt>MediaDirection</tt> to set.
+     * @throws NotConnectedException 
      */
     public void setChannelDirection(String channelID,
                                     MediaType mediaType,
-                                    MediaDirection direction)
+                                    MediaDirection direction) throws NotConnectedException
     {
         if ((colibri != null) && (channelID != null))
         {
@@ -725,13 +729,14 @@ public class CallJabberImpl
      *
      * @throws OperationFailedException with the corresponding code if we fail
      *  to create the call.
+     * @throws NotConnectedException 
      */
     public CallPeerJabberImpl initiateSession(
             String calleeJID,
             DiscoverInfo discoverInfo,
             Iterable<PacketExtension> sessionInitiateExtensions,
             Collection<String> supportedTransports)
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         // create the session-initiate IQ
         CallPeerJabberImpl callPeer = new CallPeerJabberImpl(calleeJID, this);
@@ -791,10 +796,11 @@ public class CallJabberImpl
      *
      * @throws OperationFailedException if a problem occurred during message
      * generation or there was a network problem
+     * @throws NotConnectedException 
      */
     @Override
     public void modifyVideoContent()
-        throws OperationFailedException
+        throws OperationFailedException, NotConnectedException
     {
         if (logger.isDebugEnabled())
             logger.debug("Updating video content for " + this);
@@ -897,8 +903,9 @@ public class CallJabberImpl
      *
      * @return the newly created {@link CallPeerJabberImpl} (the one that sent
      * the INVITE).
+     * @throws NotConnectedException 
      */
-    public CallPeerJabberImpl processSessionInitiate(JingleIQ jingleIQ)
+    public CallPeerJabberImpl processSessionInitiate(JingleIQ jingleIQ) throws NotConnectedException
     {
         // Use the IQs 'from', instead of the jingle 'initiator' field,
         // because we want to make sure that following IQs are sent with the

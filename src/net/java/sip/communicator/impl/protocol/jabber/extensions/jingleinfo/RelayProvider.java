@@ -51,7 +51,7 @@ public class RelayProvider
                 if(elementName.equals(ServerPacketExtension.ELEMENT_NAME))
                 {
                     PacketExtensionProvider provider = (PacketExtensionProvider)
-                        ProviderManager.getInstance().getExtensionProvider(
+                        ProviderManager.getExtensionProvider(
                                 ServerPacketExtension.ELEMENT_NAME,
                                 ServerPacketExtension.NAMESPACE);
                     PacketExtension childExtension =

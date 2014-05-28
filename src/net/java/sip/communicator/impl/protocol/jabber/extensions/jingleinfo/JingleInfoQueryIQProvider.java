@@ -39,9 +39,7 @@ public class JingleInfoQueryIQProvider
      */
     public JingleInfoQueryIQProvider()
     {
-        ProviderManager providerManager = ProviderManager.getInstance();
-
-        providerManager.addExtensionProvider(
+        ProviderManager.addExtensionProvider(
                 ServerPacketExtension.ELEMENT_NAME,
                 ServerPacketExtension.NAMESPACE,
                 new DefaultPacketExtensionProvider

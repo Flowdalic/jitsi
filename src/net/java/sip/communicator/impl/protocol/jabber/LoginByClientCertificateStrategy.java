@@ -14,6 +14,9 @@ import org.jitsi.util.*;
 import org.jivesoftware.smack.*;
 
 import javax.net.ssl.*;
+import javax.security.sasl.SaslException;
+
+import java.io.IOException;
 import java.security.*;
 
 /**
@@ -104,10 +107,13 @@ class LoginByClientCertificateStrategy
      * @return true when the login succeeded, false when the certificate wasn't
      * accepted.
      * @throws XMPPException
+     * @throws IOException 
+     * @throws SmackException 
+     * @throws SaslException 
      */
     public boolean login(XMPPConnection connection, String userName,
             String resource)
-        throws XMPPException
+        throws XMPPException, SaslException, SmackException, IOException
     {
         SASLAuthentication.supportSASLMechanism("EXTERNAL", 0);
 

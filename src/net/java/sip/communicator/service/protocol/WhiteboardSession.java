@@ -8,6 +8,8 @@ package net.java.sip.communicator.service.protocol;
 
 import java.util.*;
 
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 import net.java.sip.communicator.service.protocol.event.*;
 import net.java.sip.communicator.service.protocol.whiteboardobjects.*;
 
@@ -106,8 +108,9 @@ public interface WhiteboardSession
      * whiteboard events will be delivered. Depending on the underlying protocol
      * and implementation leave() might cause the room to be destroyed if it has
      * been created by the local user.
+     * @throws NotConnectedException 
      */
-    public abstract void leave ();
+    public abstract void leave () throws NotConnectedException;
 
     /**
      * Invites another user to this room.

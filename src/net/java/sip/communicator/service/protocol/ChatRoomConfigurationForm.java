@@ -8,6 +8,9 @@ package net.java.sip.communicator.service.protocol;
 
 import java.util.*;
 
+import org.jivesoftware.smack.SmackException.NoResponseException;
+import org.jivesoftware.smack.SmackException.NotConnectedException;
+
 /**
  * The <tt>ChatRoomConfigurationForm</tt> contains the chat room configuration.
  * It's meant to be implemented by protocol providers in order to provide an
@@ -39,6 +42,8 @@ public interface ChatRoomConfigurationForm
      *
      * @throws OperationFailedException if the submit opeation do not succeed
      * for some reason (e.g. a wrong value is provided for a property)
+     * @throws NotConnectedException 
+     * @throws NoResponseException 
      */
-    public void submit() throws OperationFailedException;
+    public void submit() throws OperationFailedException, NoResponseException, NotConnectedException;
 }
